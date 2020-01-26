@@ -10,21 +10,21 @@ namespace TestProject.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class UsersController : ControllerBase
+    public class CarsController : ControllerBase
     {
-        private readonly IUsersService _usersService;
+        private readonly ICarsService _carsService;
         private readonly IMemoryCache _memoryCache;
 
-        public UsersController(IUsersService usersService, IMemoryCache memoryCache)
+        public CarsController(ICarsService carsService, IMemoryCache memoryCache)
         {
-            _usersService = usersService;
+            _carsService = carsService;
             _memoryCache = memoryCache;
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var user = (await _usersService.Get(new[] { id }, null)).FirstOrDefault();
+            var user = (await _carsService.Get(new[] { id }, null)).FirstOrDefault();
             if (user == null)
                 return NotFound();
 
@@ -34,48 +34,48 @@ namespace TestProject.WebAPI.Controllers
         [HttpGet("")]
         public async Task<IActionResult> GetAll([FromQuery]Filters filters)
         {
-            if (_memoryCache.TryGetValue<IEnumerable<User>>("users", out var users))
+            if (_memoryCache.TryGetValue<IEnumerable<Car>>("cars", out var cars))
             {
-                return Ok(users);
+                return Ok(cars);
             }
 
-            users = await _usersService.Get(null, filters);
-            _memoryCache.Set("users", users);
+            cars = await _carsService.Get(null, filters);
+            _memoryCache.Set("cars", cars);
 
-            return Ok(users);
+            return Ok(cars);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(User user)
+        public async Task<IActionResult> Add(Car car)
         {
-            await _usersService.Add(user);
-            _memoryCache.Remove("users");
-            return Ok(user);
+            await _carsService.Add(car);
+            _memoryCache.Remove("cars");
+            return Ok(car);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, User user)
+        public async Task<IActionResult> Update(int id, Car car)
         {
-            if (id != user.Id)
+            if (id != car.Id)
             {
                 return BadRequest();
             }
-            _memoryCache.Remove("users");
+            _memoryCache.Remove("cars");
 
-            await _usersService.Update(user);
+            await _carsService.Update(car);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var user = (await _usersService.Get(new[] { id }, null)).FirstOrDefault();
+            var user = (await _carsService.Get(new[] { id }, null)).FirstOrDefault();
             if (user == null)
                 return NotFound();
 
-            _memoryCache.Remove("users");
+            _memoryCache.Remove("cars");
 
-            await _usersService.Delete(user);
+            await _carsService.Delete(user);
             return NoContent();
         }
     }

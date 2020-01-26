@@ -9,22 +9,20 @@ namespace TestProject.WebAPI.Data
             : base(options)
         { }
 
-        public DbSet<User> Users { get; set; }
+        public DbSet<Car> Cars { get; set; }
     }
 
-    public class User
+    public class Car
     {
         [Key]
         public int Id { get; set; }
 
-        public string Email { get; set; }
+        public string Make { get; set; }
 
-        public string Password { get; set; }
+        public string Model { get; set; }
 
-        public string FirstName { get; set; }
+        public uint Price { get; set; }
 
-        public string LastName { get; set; }
-
-        public uint Age { get; set; }
+        public uint Year { get; set; }
     }
 }

@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace TestProject.WebAPI.SeedData
 {
-    public class UpdateUserForm
+    public class CreateCarForm
     {
-        [JsonProperty("id")]
-        public int Id { get; set; }
-
         [JsonProperty("make")]
         public string Make { get; set; }
 
