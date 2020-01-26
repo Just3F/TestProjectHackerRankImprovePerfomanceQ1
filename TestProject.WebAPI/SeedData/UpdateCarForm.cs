@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace TestProject.WebAPI.SeedData
 {
-    public class UpdateUserForm
+    public class UpdateCarForm
     {
         [JsonProperty("id")]
         public int Id { get; set; }

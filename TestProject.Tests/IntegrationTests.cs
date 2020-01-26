@@ -79,11 +79,11 @@ namespace TestProject.Tests
             var cars2 = JsonConvert.DeserializeObject<IEnumerable<Car>>(response1.Content.ReadAsStringAsync().Result);
             cars2.Count().Should().Be(4);
             sw.Stop();
-            sw.ElapsedMilliseconds.Should().BeLessThan(4000);
+            sw.ElapsedMilliseconds.Should().BeLessThan(2000);
         }
 
         // TEST NAME - getSingleEntryById
-        // TEST DESCRIPTION - It finds single user by ID
+        // TEST DESCRIPTION - It finds single car by ID
         [Fact]
         public async Task Test2()
         {
@@ -92,35 +92,32 @@ namespace TestProject.Tests
             var response0 = await Client.GetAsync("/api/cars/1");
             response0.StatusCode.Should().BeEquivalentTo(200);
 
-            var user = JsonConvert.DeserializeObject<Car>(response0.Content.ReadAsStringAsync().Result);
-            user.Price.Should().Be(24);
+            var car = JsonConvert.DeserializeObject<Car>(response0.Content.ReadAsStringAsync().Result);
+            car.Price.Should().Be(50000);
+            car.Make.Should().Be("Audi");
+            car.Year.Should().Be(2019);
 
             var response1 = await Client.GetAsync("/api/cars/101");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
         }
 
-        // TEST NAME - getSingleEntryById
-        // TEST DESCRIPTION - It finds single user by ID
+        // TEST NAME - getSingleEntryByFilter
+        // TEST DESCRIPTION - It finds single car by ID
         [Fact]
         public async Task Test3()
         {
             await SeedData();
 
-            var response1 = await Client.GetAsync("/api/cars");
+            var response1 = await Client.GetAsync("/api/cars?years=2019&years=2018");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var cars = JsonConvert.DeserializeObject<IEnumerable<Car>>(response1.Content.ReadAsStringAsync().Result);
-            cars.Count().Should().Be(4);
-
-            var response2 = await Client.GetAsync("/api/cars?firstNames=Mike&firstNames=Daniel");
-            response2.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var filteredcars = JsonConvert.DeserializeObject<IEnumerable<Car>>(response2.Content.ReadAsStringAsync().Result).ToArray();
+            var filteredcars = JsonConvert.DeserializeObject<IEnumerable<Car>>(response1.Content.ReadAsStringAsync().Result).ToArray();
             filteredcars.Length.Should().Be(3);
-            filteredcars.Where(x => x.Make == "Mike").ToArray().Length.Should().Be(1);
-            filteredcars.Where(x => x.Make == "Daniel").ToArray().Length.Should().Be(2);
+            filteredcars.Where(x => x.Make == "Audi").ToArray().Length.Should().Be(1);
+            filteredcars.Where(x => x.Make == "Toyota").ToArray().Length.Should().Be(2);
         }
 
-        // TEST NAME - deleteUserById
-        // TEST DESCRIPTION - Check delete user web api end point
+        // TEST NAME - deleteCarById
+        // TEST DESCRIPTION - Check delete car web api end point
         [Fact]
         public async Task Test4()
         {
@@ -133,21 +130,20 @@ namespace TestProject.Tests
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
         }
 
-        // TEST NAME - updateUserById
-        // TEST DESCRIPTION - Check update user web api end point
+        // TEST NAME - updateCarById
+        // TEST DESCRIPTION - Check update car web api end point
         [Fact]
         public async Task Test5()
         {
             await SeedData();
 
-            var updateForm = new UpdateUserForm()
+            var updateForm = new UpdateCarForm()
             {
                 Id = 1,
-                //Age = 40,
-                //Email = "testemail1@mail.com",
-                //FirstName = "Mike",
-                //LastName = "Emil",
-                //Password = "0000000"
+                Year = 2017,
+                Make = "Audi",
+                Model = "A6",
+                Price = 71000
             };
 
             var response0 = await Client.PutAsync("/api/cars/1", new StringContent(JsonConvert.SerializeObject(updateForm), Encoding.UTF8, "application/json"));
@@ -156,60 +152,34 @@ namespace TestProject.Tests
             var response1 = await Client.GetAsync("/api/cars/1");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
 
-            var user = JsonConvert.DeserializeObject<Car>(response1.Content.ReadAsStringAsync().Result);
+            var car = JsonConvert.DeserializeObject<Car>(response1.Content.ReadAsStringAsync().Result);
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            user.Price.Should().Be(40);
-            //user.Count.Should().Be(5);
+            car.Year.Should().Be(2017);
+            car.Price.Should().Be(71000);
         }
 
-        // TEST NAME - exportcars
-        // TEST DESCRIPTION - In this test user should send byte array to the web api and put all cars(count is 1000) into the database
+        // TEST NAME - deleteCarById
+        // TEST DESCRIPTION - Check delete car web api end point and check clearing cashe after that
         [Fact]
         public async Task Test6()
         {
-            //Here data is exporting to the end point
-            var myJsonString = File.ReadAllBytes("MOCK_DATA.json");
-            var content = new ByteArrayContent(myJsonString);
-            var response0 = await Client.PostAsync("/api/cars/export", content);
-            response0.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-
-            //Here expect to see all cars from web api end point (1000).
-            var response1 = await Client.GetAsync("/api/cars");
-            response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var cars = JsonConvert.DeserializeObject<IEnumerable<Car>>(response1.Content.ReadAsStringAsync().Result);
-            cars.Count().Should().Be(1000);
-
-            //Here check that the data is exported in the correct way
-            var response2 = await Client.GetAsync("/api/cars?firstNames=Veronika&firstNames=Frances");
-            response2.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var filteredcars = JsonConvert.DeserializeObject<IEnumerable<Car>>(response2.Content.ReadAsStringAsync().Result).ToArray();
-            filteredcars.Length.Should().Be(3);
-            filteredcars.Where(x => x.Make == "Frances").ToArray().Length.Should().Be(1);
-            filteredcars.Where(x => x.Make == "Veronika").ToArray().Length.Should().Be(2);
-        }
-
-        // TEST NAME - checkAuthorization
-        // TEST DESCRIPTION - Here need to implement authorization by JWT tokens
-        [Fact]
-        public async Task Test7()
-        {
             await SeedData();
-            //var userLoginForm = new LoginUserForm { Email = "testemail2@mail.com", Password = "12345678" };
 
-            ////Getting token by email and password
-            //var response0 = await Client.PostAsync("/token",
-            //    new StringContent(JsonConvert.SerializeObject(userLoginForm), Encoding.UTF8, "application/json"));
-            //var jwtData = JsonConvert.DeserializeObject<LoginResponseModel>(response0.Content.ReadAsStringAsync().Result);
+            var response0 = await Client.GetAsync("/api/cars");
+            response0.StatusCode.Should().BeEquivalentTo(200);
+            var cars = JsonConvert.DeserializeObject<IEnumerable<Car>>(response0.Content.ReadAsStringAsync().Result);
+            cars.Count().Should().Be(4);
 
-            ////Check that user Unauthorized
-            //var response1 = await Client.GetAsync("/currentuser");
-            //response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status401Unauthorized);
+            var response1 = await Client.DeleteAsync("/api/cars/1");
+            response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status204NoContent);
 
-            ////adding token to request and check this end-point again
-            //Client.DefaultRequestHeaders.Add("Authorization", "Bearer " + jwtData.AccessToken);
-            //var response2 = await Client.GetAsync("/currentuser");
-            //var user = JsonConvert.DeserializeObject<Car>(response2.Content.ReadAsStringAsync().Result);
-            //user.Year.Should().BeEquivalentTo("testemail2@mail.com");
+            var response2 = await Client.GetAsync("/api/cars/1");
+            response2.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
+
+            var response3 = await Client.GetAsync("/api/cars");
+            response3.StatusCode.Should().BeEquivalentTo(200);
+            var newCars = JsonConvert.DeserializeObject<IEnumerable<Car>>(response3.Content.ReadAsStringAsync().Result);
+            newCars.Count().Should().Be(3);
         }
 
         private void SetUpClient()
