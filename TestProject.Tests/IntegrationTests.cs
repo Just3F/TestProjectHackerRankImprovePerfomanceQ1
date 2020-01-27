@@ -155,7 +155,7 @@ namespace TestProject.Tests
         }
 
         // TEST NAME - deleteCarByIdAndGettingAll
-        // TEST DESCRIPTION - Check delete car web api end point and check clearing cash after that
+        // TEST DESCRIPTION - Check delete car web api end point and check clearing hash after that
         [Fact]
         public async Task Test6()
         {
