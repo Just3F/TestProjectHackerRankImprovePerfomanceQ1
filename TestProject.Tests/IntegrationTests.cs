@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -17,7 +14,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Newtonsoft.Json;
 using TestProject.WebAPI;
 using TestProject.WebAPI.Data;
-using TestProject.WebAPI.Models;
 using TestProject.WebAPI.SeedData;
 using Xunit;
 
@@ -158,8 +154,8 @@ namespace TestProject.Tests
             car.Price.Should().Be(71000);
         }
 
-        // TEST NAME - deleteCarById
-        // TEST DESCRIPTION - Check delete car web api end point and check clearing cashe after that
+        // TEST NAME - deleteCarByIdAndGettingAll
+        // TEST DESCRIPTION - Check delete car web api end point and check clearing cash after that
         [Fact]
         public async Task Test6()
         {
