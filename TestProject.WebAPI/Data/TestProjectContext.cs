@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
 namespace TestProject.WebAPI.Data
@@ -9,20 +10,22 @@ namespace TestProject.WebAPI.Data
             : base(options)
         { }
 
-        public DbSet<Car> Cars { get; set; }
+        public DbSet<NewsFeedItem> NewsFeedItems { get; set; }
     }
 
-    public class Car
+    public class NewsFeedItem
     {
         [Key]
         public int Id { get; set; }
 
-        public string Make { get; set; }
+        public string Title { get; set; }
 
-        public string Model { get; set; }
+        public string AuthorName { get; set; }
 
-        public uint Price { get; set; }
+        public string Body { get; set; }
 
-        public uint Year { get; set; }
+        public DateTime DateCreated { get; set; }
+
+        public bool AllowComments { get; set; }
     }
 }
