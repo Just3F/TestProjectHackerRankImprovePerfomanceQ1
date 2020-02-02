@@ -66,13 +66,13 @@ namespace TestProject.Tests
             Stopwatch sw = new Stopwatch();
             var response0 = await Client.GetAsync("/api/NewsFeed");
             response0.StatusCode.Should().BeEquivalentTo(200);
-            var newsItems = JsonConvert.DeserializeObject<IEnumerable<NewsFeedItem>>(response0.Content.ReadAsStringAsync().Result);
+            var newsItems = JsonConvert.DeserializeObject<IEnumerable<Book>>(response0.Content.ReadAsStringAsync().Result);
             newsItems.Count().Should().Be(4);
 
             sw.Start();
             var response1 = await Client.GetAsync("/api/NewsFeed");
             response1.StatusCode.Should().BeEquivalentTo(200);
-            var newsItems2 = JsonConvert.DeserializeObject<IEnumerable<NewsFeedItem>>(response1.Content.ReadAsStringAsync().Result);
+            var newsItems2 = JsonConvert.DeserializeObject<IEnumerable<Book>>(response1.Content.ReadAsStringAsync().Result);
             newsItems2.Count().Should().Be(4);
             sw.Stop();
             sw.ElapsedMilliseconds.Should().BeLessThan(2000);
@@ -88,7 +88,7 @@ namespace TestProject.Tests
             var response0 = await Client.GetAsync("/api/NewsFeed/1");
             response0.StatusCode.Should().BeEquivalentTo(200);
 
-            var newsItem = JsonConvert.DeserializeObject<NewsFeedItem>(response0.Content.ReadAsStringAsync().Result);
+            var newsItem = JsonConvert.DeserializeObject<Book>(response0.Content.ReadAsStringAsync().Result);
             newsItem.Title.Should().Be("News Title 1");
             newsItem.AuthorName.Should().Be("Patrick B.");
             newsItem.AllowComments.Should().Be(true);
@@ -106,7 +106,7 @@ namespace TestProject.Tests
 
             var response1 = await Client.GetAsync("/api/newsFeed?AuthorNames=Patrick B.&AuthorNames=John D.");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var filterednewsItems = JsonConvert.DeserializeObject<IEnumerable<NewsFeedItem>>(response1.Content.ReadAsStringAsync().Result).ToArray();
+            var filterednewsItems = JsonConvert.DeserializeObject<IEnumerable<Book>>(response1.Content.ReadAsStringAsync().Result).ToArray();
             filterednewsItems.Length.Should().Be(3);
             filterednewsItems.Where(x => x.AuthorName == "John D.").ToArray().Length.Should().Be(1);
             filterednewsItems.Where(x => x.AuthorName == "Patrick B.").ToArray().Length.Should().Be(2);
@@ -151,7 +151,7 @@ namespace TestProject.Tests
             var response1 = await Client.GetAsync("/api/NewsFeed/1");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
 
-            var newsItem = JsonConvert.DeserializeObject<NewsFeedItem>(response1.Content.ReadAsStringAsync().Result);
+            var newsItem = JsonConvert.DeserializeObject<Book>(response1.Content.ReadAsStringAsync().Result);
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
             newsItem.Title.Should().Be(newTitle);
             newsItem.Body.Should().Be(newBody);
@@ -166,7 +166,7 @@ namespace TestProject.Tests
 
             var response0 = await Client.GetAsync("/api/NewsFeed");
             response0.StatusCode.Should().BeEquivalentTo(200);
-            var newsItems = JsonConvert.DeserializeObject<IEnumerable<NewsFeedItem>>(response0.Content.ReadAsStringAsync().Result);
+            var newsItems = JsonConvert.DeserializeObject<IEnumerable<Book>>(response0.Content.ReadAsStringAsync().Result);
             newsItems.Count().Should().Be(4);
 
             var response1 = await Client.DeleteAsync("/api/NewsFeed/1");
@@ -177,7 +177,7 @@ namespace TestProject.Tests
 
             var response3 = await Client.GetAsync("/api/NewsFeed");
             response3.StatusCode.Should().BeEquivalentTo(200);
-            var newNewsItems = JsonConvert.DeserializeObject<IEnumerable<NewsFeedItem>>(response3.Content.ReadAsStringAsync().Result);
+            var newNewsItems = JsonConvert.DeserializeObject<IEnumerable<Book>>(response3.Content.ReadAsStringAsync().Result);
             newNewsItems.Count().Should().Be(3);
         }
 

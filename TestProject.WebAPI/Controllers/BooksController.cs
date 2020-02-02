@@ -10,21 +10,21 @@ namespace TestProject.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class NewsFeedController : ControllerBase
+    public class BooksController : ControllerBase
     {
-        private readonly INewsFeedService _newsFeedService;
+        private readonly IBooksService _booksService;
         private readonly IMemoryCache _memoryCache;
 
-        public NewsFeedController(INewsFeedService newsFeedService, IMemoryCache memoryCache)
+        public BooksController(IBooksService booksService, IMemoryCache memoryCache)
         {
-            _newsFeedService = newsFeedService;
+            _booksService = booksService;
             _memoryCache = memoryCache;
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var user = (await _newsFeedService.Get(new[] { id }, null)).FirstOrDefault();
+            var user = (await _booksService.Get(new[] { id }, null)).FirstOrDefault();
             if (user == null)
                 return NotFound();
 
@@ -34,48 +34,48 @@ namespace TestProject.WebAPI.Controllers
         [HttpGet("")]
         public async Task<IActionResult> GetAll([FromQuery]Filters filters)
         {
-            if (_memoryCache.TryGetValue<IEnumerable<NewsFeedItem>>("newsItems", out var newsItems))
+            if (_memoryCache.TryGetValue<IEnumerable<Book>>("newsItems", out var newsItems))
             {
                 return Ok(newsItems);
             }
 
-            newsItems = await _newsFeedService.Get(null, filters);
+            newsItems = await _booksService.Get(null, filters);
             _memoryCache.Set("newsItems", newsItems);
 
             return Ok(newsItems);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(NewsFeedItem newsFeedItem)
+        public async Task<IActionResult> Add(Book book)
         {
-            await _newsFeedService.Add(newsFeedItem);
+            await _booksService.Add(book);
             _memoryCache.Remove("newsItems");
-            return Ok(newsFeedItem);
+            return Ok(book);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, NewsFeedItem newsFeedItem)
+        public async Task<IActionResult> Update(int id, Book book)
         {
-            if (id != newsFeedItem.Id)
+            if (id != book.Id)
             {
                 return BadRequest();
             }
             _memoryCache.Remove("newsItems");
 
-            await _newsFeedService.Update(newsFeedItem);
+            await _booksService.Update(book);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var user = (await _newsFeedService.Get(new[] { id }, null)).FirstOrDefault();
+            var user = (await _booksService.Get(new[] { id }, null)).FirstOrDefault();
             if (user == null)
                 return NotFound();
 
             _memoryCache.Remove("newsItems");
 
-            await _newsFeedService.Delete(user);
+            await _booksService.Delete(user);
             return NoContent();
         }
     }

@@ -18,7 +18,7 @@ namespace TestProject.WebAPI.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.0.0");
 
-            modelBuilder.Entity("TestProject.WebAPI.Data.NewsFeedItem", b =>
+            modelBuilder.Entity("TestProject.WebAPI.Data.Book", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -33,7 +33,7 @@ namespace TestProject.WebAPI.Migrations
                     b.Property<string>("Body")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("DateCreated")
+                    b.Property<DateTime>("PublishedDate")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
@@ -41,7 +41,7 @@ namespace TestProject.WebAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("NewsFeedItems");
+                    b.ToTable("Books");
                 });
 #pragma warning restore 612, 618
         }

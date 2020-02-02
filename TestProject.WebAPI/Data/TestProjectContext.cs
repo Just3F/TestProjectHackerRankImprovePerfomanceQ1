@@ -10,10 +10,10 @@ namespace TestProject.WebAPI.Data
             : base(options)
         { }
 
-        public DbSet<NewsFeedItem> NewsFeedItems { get; set; }
+        public DbSet<Book> Books { get; set; }
     }
 
-    public class NewsFeedItem
+    public class Book
     {
         [Key]
         public int Id { get; set; }
@@ -24,8 +24,6 @@ namespace TestProject.WebAPI.Data
 
         public string Body { get; set; }
 
-        public DateTime DateCreated { get; set; }
-
-        public bool AllowComments { get; set; }
+        public DateTime PublishedDate { get; set; }
     }
 }

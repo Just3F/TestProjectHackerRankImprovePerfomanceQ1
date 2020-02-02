@@ -7,87 +7,86 @@ using TestProject.WebAPI.Data;
 
 namespace TestProject.WebAPI.Services
 {
-    public class NewsFeedService : INewsFeedService
+    public class BooksService : IBooksService
     {
         private readonly TestProjectContext _testProjectContext;
 
-        public NewsFeedService(TestProjectContext testProjectContext)
+        public BooksService(TestProjectContext testProjectContext)
         {
             _testProjectContext = testProjectContext;
         }
 
-        public async Task<IEnumerable<NewsFeedItem>> Get(int[] ids, Filters filters)
+        public async Task<IEnumerable<Book>> Get(int[] ids, Filters filters)
         {
-            var newsItems = _testProjectContext.NewsFeedItems.AsQueryable();
+            var books = _testProjectContext.Books.AsQueryable();
 
             if (filters == null)
                 filters = new Filters();
 
             if (filters.Body != null && filters.Body.Any())
-                newsItems = newsItems.Where(x => filters.Body.Contains(x.Body));
+                books = books.Where(x => filters.Body.Contains(x.Body));
 
             if (filters.AuthorNames != null && filters.AuthorNames.Any())
-                newsItems = newsItems.Where(x => filters.AuthorNames.Contains(x.AuthorName));
+                books = books.Where(x => filters.AuthorNames.Contains(x.AuthorName));
 
             if (filters.Title != null && filters.Title.Any())
-                newsItems = newsItems.Where(x => filters.Title.Contains(x.Title));
+                books = books.Where(x => filters.Title.Contains(x.Title));
 
             if (ids != null && ids.Any())
-                newsItems = newsItems.Where(x => ids.Contains(x.Id));
+                books = books.Where(x => ids.Contains(x.Id));
 
             await Task.Delay(2000);
 
-            return await newsItems.ToListAsync();
+            return await books.ToListAsync();
         }
 
-        public async Task<NewsFeedItem> Add(NewsFeedItem newsFeedItem)
+        public async Task<Book> Add(Book book)
         {
-            await _testProjectContext.NewsFeedItems.AddAsync(newsFeedItem);
-            newsFeedItem.DateCreated = DateTime.UtcNow;
+            await _testProjectContext.Books.AddAsync(book);
+            book.PublishedDate = DateTime.UtcNow;
 
             await _testProjectContext.SaveChangesAsync();
-            return newsFeedItem;
+            return book;
         }
 
-        public async Task<IEnumerable<NewsFeedItem>> AddRange(IEnumerable<NewsFeedItem> newsItems)
+        public async Task<IEnumerable<Book>> AddRange(IEnumerable<Book> books)
         {
-            await _testProjectContext.NewsFeedItems.AddRangeAsync(newsItems);
+            await _testProjectContext.Books.AddRangeAsync(books);
             await _testProjectContext.SaveChangesAsync();
-            return newsItems;
+            return books;
         }
 
-        public async Task<NewsFeedItem> Update(NewsFeedItem newsFeedItem)
+        public async Task<Book> Update(Book book)
         {
-            var newsItemForChanges = await _testProjectContext.NewsFeedItems.SingleAsync(x => x.Id == newsFeedItem.Id);
-            newsItemForChanges.Body = newsFeedItem.Body;
-            newsItemForChanges.Title = newsFeedItem.Title;
-            newsItemForChanges.AllowComments = newsFeedItem.AllowComments;
+            var bookForChanges = await _testProjectContext.Books.SingleAsync(x => x.Id == book.Id);
+            bookForChanges.Body = book.Body;
+            bookForChanges.Title = book.Title;
 
-            _testProjectContext.NewsFeedItems.Update(newsItemForChanges);
+            _testProjectContext.Books.Update(bookForChanges);
             await _testProjectContext.SaveChangesAsync();
-            return newsFeedItem;
+            return book;
         }
 
-        public async Task<bool> Delete(NewsFeedItem newsFeedItem)
+        public async Task<bool> Delete(Book book)
         {
-            _testProjectContext.NewsFeedItems.Remove(newsFeedItem);
+            _testProjectContext.Books.Remove(book);
             await _testProjectContext.SaveChangesAsync();
 
             return true;
         }
     }
 
-    public interface INewsFeedService
+    public interface IBooksService
     {
-        Task<IEnumerable<NewsFeedItem>> Get(int[] ids, Filters filters);
+        Task<IEnumerable<Book>> Get(int[] ids, Filters filters);
 
-        Task<NewsFeedItem> Add(NewsFeedItem newsFeedItem);
+        Task<Book> Add(Book book);
 
-        Task<IEnumerable<NewsFeedItem>> AddRange(IEnumerable<NewsFeedItem> newsItems);
+        Task<IEnumerable<Book>> AddRange(IEnumerable<Book> books);
 
-        Task<NewsFeedItem> Update(NewsFeedItem newsFeedItem);
+        Task<Book> Update(Book book);
 
-        Task<bool> Delete(NewsFeedItem newsFeedItem);
+        Task<bool> Delete(Book book);
     }
 
     public class Filters
