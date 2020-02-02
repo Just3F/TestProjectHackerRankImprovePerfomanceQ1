@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace TestProject.WebAPI.SeedData
 {
-    public class UpdateNewsFeedItemForm
+    public class UpdateBooksForm
     {
         [JsonProperty("id")]
         public int Id { get; set; }
@@ -17,10 +17,7 @@ namespace TestProject.WebAPI.SeedData
         [JsonProperty("body")]
         public string Body { get; set; }
 
-        [JsonProperty("dateCreated")]
-        public DateTime DateCreated { get; set; }
-
-        [JsonProperty("allowComments")]
-        public bool AllowComments { get; set; }
+        [JsonProperty("publishedDate")]
+        public DateTime PublishedDate { get; set; }
     }
 }
