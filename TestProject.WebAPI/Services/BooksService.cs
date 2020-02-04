@@ -35,8 +35,6 @@ namespace TestProject.WebAPI.Services
             if (ids != null && ids.Any())
                 books = books.Where(x => ids.Contains(x.Id));
 
-            await Task.Delay(2000);
-
             return await books.ToListAsync();
         }
 
