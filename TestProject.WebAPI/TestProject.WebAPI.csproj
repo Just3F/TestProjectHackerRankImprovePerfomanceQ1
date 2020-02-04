@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20200204105802_initMigration.cs" />
+    <Compile Remove="Migrations\20200204105802_initMigration.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="app.config" />
   </ItemGroup>
 
