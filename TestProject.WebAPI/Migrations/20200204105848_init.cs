@@ -16,12 +16,11 @@ namespace TestProject.WebAPI.Migrations
                     Title = table.Column<string>(nullable: true),
                     AuthorName = table.Column<string>(nullable: true),
                     Body = table.Column<string>(nullable: true),
-                    DateCreated = table.Column<DateTime>(nullable: false),
-                    AllowComments = table.Column<bool>(nullable: false)
+                    PublishedDate = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_NewsFeedItems", x => x.Id);
+                    table.PrimaryKey("PK_Books", x => x.Id);
                 });
         }
 

@@ -22,9 +22,6 @@ namespace TestProject.WebAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("AllowComments")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("AuthorName")
                         .HasColumnType("TEXT");
 

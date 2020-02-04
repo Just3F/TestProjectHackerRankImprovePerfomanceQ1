@@ -9,7 +9,7 @@ using TestProject.WebAPI.Data;
 namespace TestProject.WebAPI.Migrations
 {
     [DbContext(typeof(TestProjectContext))]
-    [Migration("20200201063441_init")]
+    [Migration("20200204105848_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -22,9 +22,6 @@ namespace TestProject.WebAPI.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("AllowComments")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("AuthorName")
