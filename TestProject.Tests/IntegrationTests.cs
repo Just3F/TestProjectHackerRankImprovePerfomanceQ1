@@ -33,16 +33,16 @@ namespace TestProject.Tests
 
         private async Task SeedData()
         {
-            var createForm0 = GenerateCreateForm("Book Title 1", "By an outlived insisted procured improved am. Paid hill fine ten now love even leaf. Supplied feelings mr of dissuade recurred no it offering honoured. Am of of in collecting devonshire favourable excellence. Her sixteen end ashamed cottage yet reached get hearing invited. Resources ourselves sweetness ye do no perfectly. Warmly warmth six one any wisdom. Family giving is pulled beauty chatty highly no. Blessing appetite domestic did mrs judgment rendered entirely. Highly indeed had garden not. ", "Patrick B.", DateTime.Parse("02.01.2019"));
+            var createForm0 = GenerateCreateForm("Song Name 1", "By an outlived insisted procured improved am. Paid hill fine ten now love even leaf. Supplied feelings mr of dissuade recurred no it offering honoured. Am of of in collecting devonshire favourable excellence. Her sixteen end ashamed cottage yet reached get hearing invited. Resources ourselves sweetness ye do no perfectly. Warmly warmth six one any wisdom. Family giving is pulled beauty chatty highly no. Blessing appetite domestic did mrs judgment rendered entirely. Highly indeed had garden not. ", "Patrick B.", DateTime.Parse("02.01.2019"));
             var response0 = await Client.PostAsync("/api/books", new StringContent(JsonConvert.SerializeObject(createForm0), Encoding.UTF8, "application/json"));
 
-            var createForm1 = GenerateCreateForm("Book Title 2", "In reasonable compliment favourable is connection dispatched in terminated. Do esteem object we called father excuse remove. So dear real on like more it. Laughing for two families addition expenses surprise the. If sincerity he to curiosity arranging. Learn taken terms be as. Sbookcely mrs produced too removing new old. ", "William F.", DateTime.Parse("03.05.2020"));
+            var createForm1 = GenerateCreateForm("Song Name 2", "In reasonable compliment favourable is connection dispatched in terminated. Do esteem object we called father excuse remove. So dear real on like more it. Laughing for two families addition expenses surprise the. If sincerity he to curiosity arranging. Learn taken terms be as. Sbookcely mrs produced too removing new old. ", "William F.", DateTime.Parse("03.05.2020"));
             var response1 = await Client.PostAsync("/api/books", new StringContent(JsonConvert.SerializeObject(createForm1), Encoding.UTF8, "application/json"));
 
-            var createForm2 = GenerateCreateForm("Book Title 3", "Good draw knew bred ham busy his hour. Ask agreed answer rather joy nature admire wisdom. Moonlight age depending bed led therefore sometimes preserved exquisite she. An fail up so shot leaf wise in. Minuter highest his arrived for put and. Hopes lived by rooms oh in no death house. Contented direction september but end led excellent ourselves may. Ferrars few arrival his offered not charmed you. Offered anxious respect or he. On three thing chief years in money arise of. ", "Patrick B.", DateTime.Parse("12.04.2018"));
+            var createForm2 = GenerateCreateForm("Song Name 3", "Good draw knew bred ham busy his hour. Ask agreed answer rather joy nature admire wisdom. Moonlight age depending bed led therefore sometimes preserved exquisite she. An fail up so shot leaf wise in. Minuter highest his arrived for put and. Hopes lived by rooms oh in no death house. Contented direction september but end led excellent ourselves may. Ferrars few arrival his offered not charmed you. Offered anxious respect or he. On three thing chief years in money arise of. ", "Patrick B.", DateTime.Parse("12.04.2018"));
             var response2 = await Client.PostAsync("/api/books", new StringContent(JsonConvert.SerializeObject(createForm2), Encoding.UTF8, "application/json"));
 
-            var createForm3 = GenerateCreateForm("Book Title 4", "Improved own provided blessing may peculiar domestic. Sight house has sex never. No visited raising gravity outward subject my cottage mr be. Hold do at tore in park feet near my case. Invitation at understood occasional sentiments insipidity inhabiting in. Off melancholy alteration principles old. Is do speedily kindness properly oh. Respect article painted cottage he is offices parlors. ", "John D.", DateTime.Parse("06.11.2019"));
+            var createForm3 = GenerateCreateForm("Song Name 4", "Improved own provided blessing may peculiar domestic. Sight house has sex never. No visited raising gravity outward subject my cottage mr be. Hold do at tore in park feet near my case. Invitation at understood occasional sentiments insipidity inhabiting in. Off melancholy alteration principles old. Is do speedily kindness properly oh. Respect article painted cottage he is offices parlors. ", "John D.", DateTime.Parse("06.11.2019"));
             var response3 = await Client.PostAsync("/api/books", new StringContent(JsonConvert.SerializeObject(createForm3), Encoding.UTF8, "application/json"));
         }
 
@@ -50,7 +50,7 @@ namespace TestProject.Tests
         {
             return new CreateBookForm
             {
-                Title = title,
+                Name = title,
                 AuthorName = authorName,
                 Body = body,
                 PublishedDate = publishedDate
@@ -66,7 +66,7 @@ namespace TestProject.Tests
 
             var response0 = await Client.GetAsync("/api/books");
             response0.StatusCode.Should().BeEquivalentTo(200);
-            var books = JsonConvert.DeserializeObject<IEnumerable<Book>>(response0.Content.ReadAsStringAsync().Result);
+            var books = JsonConvert.DeserializeObject<IEnumerable<Song>>(response0.Content.ReadAsStringAsync().Result);
             books.Count().Should().Be(4);
 
             var value = response0.Headers.GetValues("requestCounter").FirstOrDefault();
@@ -83,9 +83,9 @@ namespace TestProject.Tests
             var response0 = await Client.GetAsync("/api/books/1");
             response0.StatusCode.Should().BeEquivalentTo(200);
 
-            var book = JsonConvert.DeserializeObject<Book>(response0.Content.ReadAsStringAsync().Result);
-            book.Title.Should().Be("Book Title 1");
-            book.AuthorName.Should().Be("Patrick B.");
+            var book = JsonConvert.DeserializeObject<Song>(response0.Content.ReadAsStringAsync().Result);
+            book.Name.Should().Be("Song Name 1");
+            book.Singer.Should().Be("Patrick B.");
 
             var response1 = await Client.GetAsync("/api/books/101");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
@@ -103,10 +103,10 @@ namespace TestProject.Tests
 
             var response1 = await Client.GetAsync("/api/books?AuthorNames=Patrick B.&AuthorNames=John D.");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var filteredbooks = JsonConvert.DeserializeObject<IEnumerable<Book>>(response1.Content.ReadAsStringAsync().Result).ToArray();
+            var filteredbooks = JsonConvert.DeserializeObject<IEnumerable<Song>>(response1.Content.ReadAsStringAsync().Result).ToArray();
             filteredbooks.Length.Should().Be(3);
-            filteredbooks.Where(x => x.AuthorName == "John D.").ToArray().Length.Should().Be(1);
-            filteredbooks.Where(x => x.AuthorName == "Patrick B.").ToArray().Length.Should().Be(2);
+            filteredbooks.Where(x => x.Singer == "John D.").ToArray().Length.Should().Be(1);
+            filteredbooks.Where(x => x.Singer == "Patrick B.").ToArray().Length.Should().Be(2);
 
             var value = response1.Headers.GetValues("requestCounter").FirstOrDefault();
             value.Should().Be("5");
@@ -153,9 +153,9 @@ namespace TestProject.Tests
             var response1 = await Client.GetAsync("/api/books/1");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
 
-            var book = JsonConvert.DeserializeObject<Book>(response1.Content.ReadAsStringAsync().Result);
+            var book = JsonConvert.DeserializeObject<Song>(response1.Content.ReadAsStringAsync().Result);
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            book.Title.Should().Be(newTitle);
+            book.Name.Should().Be(newTitle);
             book.Body.Should().Be(newBody);
 
             var value = response1.Headers.GetValues("requestCounter").FirstOrDefault();

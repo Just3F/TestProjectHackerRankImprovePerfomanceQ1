@@ -10,12 +10,12 @@ namespace TestProject.WebAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class BooksController : ControllerBase
+    public class SongsController : ControllerBase
     {
         private readonly IBooksService _booksService;
         private readonly IMemoryCache _memoryCache;
 
-        public BooksController(IBooksService booksService, IMemoryCache memoryCache)
+        public SongsController(IBooksService booksService, IMemoryCache memoryCache)
         {
             _booksService = booksService;
             _memoryCache = memoryCache;
@@ -34,7 +34,7 @@ namespace TestProject.WebAPI.Controllers
         [HttpGet("")]
         public async Task<IActionResult> GetAll([FromQuery]Filters filters)
         {
-            if (_memoryCache.TryGetValue<IEnumerable<Book>>("newsItems", out var newsItems))
+            if (_memoryCache.TryGetValue<IEnumerable<Song>>("newsItems", out var newsItems))
             {
                 return Ok(newsItems);
             }
@@ -46,23 +46,23 @@ namespace TestProject.WebAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(Book book)
+        public async Task<IActionResult> Add(Song song)
         {
-            await _booksService.Add(book);
+            await _booksService.Add(song);
             _memoryCache.Remove("newsItems");
-            return Ok(book);
+            return Ok(song);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Book book)
+        public async Task<IActionResult> Update(int id, Song song)
         {
-            if (id != book.Id)
+            if (id != song.Id)
             {
                 return BadRequest();
             }
             _memoryCache.Remove("newsItems");
 
-            await _booksService.Update(book);
+            await _booksService.Update(song);
             return NoContent();
         }
 

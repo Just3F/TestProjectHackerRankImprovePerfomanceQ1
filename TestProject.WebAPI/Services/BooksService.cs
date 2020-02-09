@@ -16,21 +16,21 @@ namespace TestProject.WebAPI.Services
             _testProjectContext = testProjectContext;
         }
 
-        public async Task<IEnumerable<Book>> Get(int[] ids, Filters filters)
+        public async Task<IEnumerable<Song>> Get(int[] ids, Filters filters)
         {
-            var books = _testProjectContext.Books.AsQueryable();
+            var books = _testProjectContext.Songs.AsQueryable();
 
             if (filters == null)
                 filters = new Filters();
 
             if (filters.Body != null && filters.Body.Any())
-                books = books.Where(x => filters.Body.Contains(x.Body));
+                books = books.Where(x => filters.Body.Contains(x.Singer));
 
             if (filters.AuthorNames != null && filters.AuthorNames.Any())
-                books = books.Where(x => filters.AuthorNames.Contains(x.AuthorName));
+                books = books.Where(x => filters.AuthorNames.Contains(x.Singer));
 
             if (filters.Title != null && filters.Title.Any())
-                books = books.Where(x => filters.Title.Contains(x.Title));
+                books = books.Where(x => filters.Title.Contains(x.Name));
 
             if (ids != null && ids.Any())
                 books = books.Where(x => ids.Contains(x.Id));
@@ -38,36 +38,36 @@ namespace TestProject.WebAPI.Services
             return await books.ToListAsync();
         }
 
-        public async Task<Book> Add(Book book)
+        public async Task<Song> Add(Song song)
         {
-            await _testProjectContext.Books.AddAsync(book);
-            book.PublishedDate = DateTime.UtcNow;
+            await _testProjectContext.Songs.AddAsync(song);
+            song.ReleaseDate = DateTime.UtcNow;
 
             await _testProjectContext.SaveChangesAsync();
-            return book;
+            return song;
         }
 
-        public async Task<IEnumerable<Book>> AddRange(IEnumerable<Book> books)
+        public async Task<IEnumerable<Song>> AddRange(IEnumerable<Song> books)
         {
-            await _testProjectContext.Books.AddRangeAsync(books);
+            await _testProjectContext.Songs.AddRangeAsync(books);
             await _testProjectContext.SaveChangesAsync();
             return books;
         }
 
-        public async Task<Book> Update(Book book)
+        public async Task<Song> Update(Song song)
         {
-            var bookForChanges = await _testProjectContext.Books.SingleAsync(x => x.Id == book.Id);
-            bookForChanges.Body = book.Body;
-            bookForChanges.Title = book.Title;
+            var bookForChanges = await _testProjectContext.Songs.SingleAsync(x => x.Id == song.Id);
+            bookForChanges.Singer = song.Singer;
+            bookForChanges.Name = song.Name;
 
-            _testProjectContext.Books.Update(bookForChanges);
+            _testProjectContext.Songs.Update(bookForChanges);
             await _testProjectContext.SaveChangesAsync();
-            return book;
+            return song;
         }
 
-        public async Task<bool> Delete(Book book)
+        public async Task<bool> Delete(Song song)
         {
-            _testProjectContext.Books.Remove(book);
+            _testProjectContext.Songs.Remove(song);
             await _testProjectContext.SaveChangesAsync();
 
             return true;
@@ -76,15 +76,15 @@ namespace TestProject.WebAPI.Services
 
     public interface IBooksService
     {
-        Task<IEnumerable<Book>> Get(int[] ids, Filters filters);
+        Task<IEnumerable<Song>> Get(int[] ids, Filters filters);
 
-        Task<Book> Add(Book book);
+        Task<Song> Add(Song song);
 
-        Task<IEnumerable<Book>> AddRange(IEnumerable<Book> books);
+        Task<IEnumerable<Song>> AddRange(IEnumerable<Song> books);
 
-        Task<Book> Update(Book book);
+        Task<Song> Update(Song song);
 
-        Task<bool> Delete(Book book);
+        Task<bool> Delete(Song song);
     }
 
     public class Filters

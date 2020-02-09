@@ -5,16 +5,25 @@ namespace TestProject.WebAPI.SeedData
 {
     public class CreateBookForm
     {
-        [JsonProperty("title")]
-        public string Title { get; set; }
+        [JsonProperty("id")]
+        public int Id { get; set; }
 
-        [JsonProperty("authorName")]
-        public string AuthorName { get; set; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
 
-        [JsonProperty("body")]
-        public string Body { get; set; }
+        [JsonProperty("singer")]
+        public SingerForm Singer { get; set; }
 
-        [JsonProperty("publishedDate")]
-        public DateTime PublishedDate { get; set; }
+        [JsonProperty("releaseDate")]
+        public DateTime ReleaseDate { get; set; }
+    }
+
+    public class SingerForm
+    {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
     }
 }
