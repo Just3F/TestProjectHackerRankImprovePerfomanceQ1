@@ -7,30 +7,27 @@ using TestProject.WebAPI.Data;
 
 namespace TestProject.WebAPI.Services
 {
-    public class BooksService : IBooksService
+    public class RoomsService : IRoomsService
     {
         private readonly TestProjectContext _testProjectContext;
 
-        public BooksService(TestProjectContext testProjectContext)
+        public RoomsService(TestProjectContext testProjectContext)
         {
             _testProjectContext = testProjectContext;
         }
 
-        public async Task<IEnumerable<Book>> Get(int[] ids, Filters filters)
+        public async Task<IEnumerable<Room>> Get(int[] ids, Filters filters)
         {
-            var books = _testProjectContext.Books.AsQueryable();
+            var books = _testProjectContext.Rooms.AsQueryable();
 
             if (filters == null)
                 filters = new Filters();
 
-            if (filters.Body != null && filters.Body.Any())
-                books = books.Where(x => filters.Body.Contains(x.Body));
+            if (filters.Categories != null && filters.Categories.Any())
+                books = books.Where(x => filters.Categories.Contains(x.Category));
 
-            if (filters.AuthorNames != null && filters.AuthorNames.Any())
-                books = books.Where(x => filters.AuthorNames.Contains(x.AuthorName));
-
-            if (filters.Title != null && filters.Title.Any())
-                books = books.Where(x => filters.Title.Contains(x.Title));
+            if (filters.Floors != null && filters.Floors.Any())
+                books = books.Where(x => filters.Floors.Contains(x.Floor));
 
             if (ids != null && ids.Any())
                 books = books.Where(x => ids.Contains(x.Id));
@@ -38,59 +35,60 @@ namespace TestProject.WebAPI.Services
             return await books.ToListAsync();
         }
 
-        public async Task<Book> Add(Book book)
+        public async Task<Room> Add(Room room)
         {
-            await _testProjectContext.Books.AddAsync(book);
-            book.PublishedDate = DateTime.UtcNow;
+            await _testProjectContext.Rooms.AddAsync(room);
+            room.AddedDate = DateTime.UtcNow;
 
             await _testProjectContext.SaveChangesAsync();
-            return book;
+            return room;
         }
 
-        public async Task<IEnumerable<Book>> AddRange(IEnumerable<Book> books)
+        public async Task<IEnumerable<Room>> AddRange(IEnumerable<Room> books)
         {
-            await _testProjectContext.Books.AddRangeAsync(books);
+            await _testProjectContext.Rooms.AddRangeAsync(books);
             await _testProjectContext.SaveChangesAsync();
             return books;
         }
 
-        public async Task<Book> Update(Book book)
+        public async Task<Room> Update(Room room)
         {
-            var bookForChanges = await _testProjectContext.Books.SingleAsync(x => x.Id == book.Id);
-            bookForChanges.Body = book.Body;
-            bookForChanges.Title = book.Title;
+            var bookForChanges = await _testProjectContext.Rooms.SingleAsync(x => x.Id == room.Id);
+            bookForChanges.IsAvailable = room.IsAvailable;
+            bookForChanges.Category = room.Category;
+            bookForChanges.Floor = room.Floor;
+            bookForChanges.Number = room.Number;
 
-            _testProjectContext.Books.Update(bookForChanges);
+            _testProjectContext.Rooms.Update(bookForChanges);
             await _testProjectContext.SaveChangesAsync();
-            return book;
+            return room;
         }
 
-        public async Task<bool> Delete(Book book)
+        public async Task<bool> Delete(Room room)
         {
-            _testProjectContext.Books.Remove(book);
+            _testProjectContext.Rooms.Remove(room);
             await _testProjectContext.SaveChangesAsync();
 
             return true;
         }
     }
 
-    public interface IBooksService
+    public interface IRoomsService
     {
-        Task<IEnumerable<Book>> Get(int[] ids, Filters filters);
+        Task<IEnumerable<Room>> Get(int[] ids, Filters filters);
 
-        Task<Book> Add(Book book);
+        Task<Room> Add(Room room);
 
-        Task<IEnumerable<Book>> AddRange(IEnumerable<Book> books);
+        Task<IEnumerable<Room>> AddRange(IEnumerable<Room> books);
 
-        Task<Book> Update(Book book);
+        Task<Room> Update(Room room);
 
-        Task<bool> Delete(Book book);
+        Task<bool> Delete(Room room);
     }
 
     public class Filters
     {
-        public string[] Body { get; set; }
-        public string[] AuthorNames { get; set; }
-        public string[] Title { get; set; }
+        public string[] Categories { get; set; }
+        public int[] Floors { get; set; }
     }
 }

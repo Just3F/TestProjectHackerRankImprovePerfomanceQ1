@@ -33,133 +33,140 @@ namespace TestProject.Tests
 
         private async Task SeedData()
         {
-            var createForm0 = GenerateCreateForm("Book Title 1", "By an outlived insisted procured improved am. Paid hill fine ten now love even leaf. Supplied feelings mr of dissuade recurred no it offering honoured. Am of of in collecting devonshire favourable excellence. Her sixteen end ashamed cottage yet reached get hearing invited. Resources ourselves sweetness ye do no perfectly. Warmly warmth six one any wisdom. Family giving is pulled beauty chatty highly no. Blessing appetite domestic did mrs judgment rendered entirely. Highly indeed had garden not. ", "Patrick B.", DateTime.Parse("02.01.2019"));
-            var response0 = await Client.PostAsync("/api/books", new StringContent(JsonConvert.SerializeObject(createForm0), Encoding.UTF8, "application/json"));
+            var createForm0 = GenerateCreateForm("Room Category 1", 523, 5, DateTime.Parse("02.01.2019"));
+            var response0 = await Client.PostAsync("/api/rooms", new StringContent(JsonConvert.SerializeObject(createForm0), Encoding.UTF8, "application/json"));
 
-            var createForm1 = GenerateCreateForm("Book Title 2", "In reasonable compliment favourable is connection dispatched in terminated. Do esteem object we called father excuse remove. So dear real on like more it. Laughing for two families addition expenses surprise the. If sincerity he to curiosity arranging. Learn taken terms be as. Sbookcely mrs produced too removing new old. ", "William F.", DateTime.Parse("03.05.2020"));
-            var response1 = await Client.PostAsync("/api/books", new StringContent(JsonConvert.SerializeObject(createForm1), Encoding.UTF8, "application/json"));
+            var createForm1 = GenerateCreateForm("Room Category 2", 512, 5, DateTime.Parse("03.05.2020"));
+            var response1 = await Client.PostAsync("/api/rooms", new StringContent(JsonConvert.SerializeObject(createForm1), Encoding.UTF8, "application/json"));
 
-            var createForm2 = GenerateCreateForm("Book Title 3", "Good draw knew bred ham busy his hour. Ask agreed answer rather joy nature admire wisdom. Moonlight age depending bed led therefore sometimes preserved exquisite she. An fail up so shot leaf wise in. Minuter highest his arrived for put and. Hopes lived by rooms oh in no death house. Contented direction september but end led excellent ourselves may. Ferrars few arrival his offered not charmed you. Offered anxious respect or he. On three thing chief years in money arise of. ", "Patrick B.", DateTime.Parse("12.04.2018"));
-            var response2 = await Client.PostAsync("/api/books", new StringContent(JsonConvert.SerializeObject(createForm2), Encoding.UTF8, "application/json"));
+            var createForm2 = GenerateCreateForm("Room Category 3", 332, 3, DateTime.Parse("12.04.2018"));
+            var response2 = await Client.PostAsync("/api/rooms", new StringContent(JsonConvert.SerializeObject(createForm2), Encoding.UTF8, "application/json"));
 
-            var createForm3 = GenerateCreateForm("Book Title 4", "Improved own provided blessing may peculiar domestic. Sight house has sex never. No visited raising gravity outward subject my cottage mr be. Hold do at tore in park feet near my case. Invitation at understood occasional sentiments insipidity inhabiting in. Off melancholy alteration principles old. Is do speedily kindness properly oh. Respect article painted cottage he is offices parlors. ", "John D.", DateTime.Parse("06.11.2019"));
-            var response3 = await Client.PostAsync("/api/books", new StringContent(JsonConvert.SerializeObject(createForm3), Encoding.UTF8, "application/json"));
+            var createForm3 = GenerateCreateForm("Room Category 4", 123, 1, DateTime.Parse("06.11.2019"));
+            var response3 = await Client.PostAsync("/api/rooms", new StringContent(JsonConvert.SerializeObject(createForm3), Encoding.UTF8, "application/json"));
+       
+            var createForm4 = GenerateCreateForm("Room Category 5", 573, 5, DateTime.Parse("03.01.2020"));
+            var response4 = await Client.PostAsync("/api/rooms", new StringContent(JsonConvert.SerializeObject(createForm4), Encoding.UTF8, "application/json"));
+       
+            var createForm5 = GenerateCreateForm("Room Category 6", 632, 6, DateTime.Parse("06.12.2018"));
+            var response5 = await Client.PostAsync("/api/rooms", new StringContent(JsonConvert.SerializeObject(createForm5), Encoding.UTF8, "application/json"));
         }
 
-        private CreateBookForm GenerateCreateForm(string title, string body, string authorName, DateTime publishedDate)
+        private RoomForm GenerateCreateForm(string category, int number, int floor, DateTime publishedDate)
         {
-            return new CreateBookForm
+            return new RoomForm
             {
-                Title = title,
-                AuthorName = authorName,
-                Body = body,
-                PublishedDate = publishedDate
+                Category = category,
+                Floor = floor,
+                Number = number,
+                AddedDate = publishedDate
             };
         }
 
         // TEST NAME - getAllEntriesById
-        // TEST DESCRIPTION - It finds all books in Database
+        // TEST DESCRIPTION - It finds all rooms in Database
         [Fact]
         public async Task Test1()
         {
             await SeedData();
 
-            var response0 = await Client.GetAsync("/api/books");
+            var response0 = await Client.GetAsync("/api/rooms");
             response0.StatusCode.Should().BeEquivalentTo(200);
-            var books = JsonConvert.DeserializeObject<IEnumerable<Book>>(response0.Content.ReadAsStringAsync().Result);
-            books.Count().Should().Be(4);
+            var rooms = JsonConvert.DeserializeObject<IEnumerable<Room>>(response0.Content.ReadAsStringAsync().Result);
+            rooms.Count().Should().Be(6);
 
-            var value = response0.Headers.GetValues("requestCounter").FirstOrDefault();
-            value.Should().Be("5");
+            //var value = response0.Headers.GetValues("requestCounter").FirstOrDefault();
+            //value.Should().Be("5");
         }
 
         // TEST NAME - getSingleEntryById
-        // TEST DESCRIPTION - It finds single book by ID
+        // TEST DESCRIPTION - It finds single room by ID
         [Fact]
         public async Task Test2()
         {
             await SeedData();
 
-            var response0 = await Client.GetAsync("/api/books/1");
+            var response0 = await Client.GetAsync("/api/rooms/1");
             response0.StatusCode.Should().BeEquivalentTo(200);
 
-            var book = JsonConvert.DeserializeObject<Book>(response0.Content.ReadAsStringAsync().Result);
-            book.Title.Should().Be("Book Title 1");
-            book.AuthorName.Should().Be("Patrick B.");
+            var room = JsonConvert.DeserializeObject<Room>(response0.Content.ReadAsStringAsync().Result);
+            room.Category.Should().Be("Room Category 1");
+            room.Number.Should().Be(523);
 
-            var response1 = await Client.GetAsync("/api/books/101");
+            var response1 = await Client.GetAsync("/api/rooms/101");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
 
-            var value = response1.Headers.GetValues("requestCounter").FirstOrDefault();
-            value.Should().Be("6");
+            //var value = response1.Headers.GetValues("requestCounter").FirstOrDefault();
+            //value.Should().Be("6");
         }
 
         // TEST NAME - getSingleEntryByFilter
-        // TEST DESCRIPTION - It finds single book by ID
+        // TEST DESCRIPTION - It finds single room by ID
         [Fact]
         public async Task Test3()
         {
             await SeedData();
 
-            var response1 = await Client.GetAsync("/api/books?AuthorNames=Patrick B.&AuthorNames=John D.");
+            var response1 = await Client.GetAsync("/api/rooms?Floors=5&Floors=6");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var filteredbooks = JsonConvert.DeserializeObject<IEnumerable<Book>>(response1.Content.ReadAsStringAsync().Result).ToArray();
-            filteredbooks.Length.Should().Be(3);
-            filteredbooks.Where(x => x.AuthorName == "John D.").ToArray().Length.Should().Be(1);
-            filteredbooks.Where(x => x.AuthorName == "Patrick B.").ToArray().Length.Should().Be(2);
+            var filteredRooms = JsonConvert.DeserializeObject<IEnumerable<Room>>(response1.Content.ReadAsStringAsync().Result).ToArray();
+            filteredRooms.Length.Should().Be(4);
+            filteredRooms.Where(x => x.Floor == 5).ToArray().Length.Should().Be(3);
+            filteredRooms.Where(x => x.Floor == 6).ToArray().Length.Should().Be(1);
 
-            var value = response1.Headers.GetValues("requestCounter").FirstOrDefault();
-            value.Should().Be("5");
+            //var value = response1.Headers.GetValues("requestCounter").FirstOrDefault();
+            //value.Should().Be("5");
         }
 
-        // TEST NAME - deleteBookById
-        // TEST DESCRIPTION - Check delete book web api end point
+        // TEST NAME - deleteRoomById
+        // TEST DESCRIPTION - Check delete room web api end point
         [Fact]
         public async Task Test4()
         {
             await SeedData();
 
-            var response0 = await Client.DeleteAsync("/api/books/1");
+            var response0 = await Client.DeleteAsync("/api/rooms/1");
             response0.StatusCode.Should().BeEquivalentTo(StatusCodes.Status204NoContent);
 
-            var response1 = await Client.GetAsync("/api/books/1");
+            var response1 = await Client.GetAsync("/api/rooms/1");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
 
-            var value = response1.Headers.GetValues("requestCounter").FirstOrDefault();
-            value.Should().Be("6");
+            //var value = response1.Headers.GetValues("requestCounter").FirstOrDefault();
+            //value.Should().Be("6");
         }
 
-        // TEST NAME - updateBookById
-        // TEST DESCRIPTION - Check update book web api end point
+        // TEST NAME - updateRoomById
+        // TEST DESCRIPTION - Check update room web api end point
         [Fact]
         public async Task Test5()
         {
             await SeedData();
 
-            var newTitle = "New title 6";
-            var newBody =
-                "Material confined likewise it humanity raillery an unpacked as he. Three chief merit no if. Now how her edward engage not horses. Oh resolution he dissimilar precaution to comparison an. Matters engaged between he of pursuit manners we moments. Merit gay end sight front. Manor equal it on again ye folly by match. In so melancholy as an sentiments simplicity connection. Far supply depart branch agreed old get our.";
+            var newFloor = 5;
+            var updatedCategory = "Updated category";
 
-            var updateForm = new UpdateBooksForm()
+            var updateForm = new RoomForm()
             {
                 Id = 1,
-                Title = newTitle,
-                Body = newBody
+                Floor = newFloor,
+                Category = updatedCategory,
+                IsAvailable = false
             };
 
-            var response0 = await Client.PutAsync("/api/books/1", new StringContent(JsonConvert.SerializeObject(updateForm), Encoding.UTF8, "application/json"));
+            var response0 = await Client.PutAsync("/api/rooms/1", new StringContent(JsonConvert.SerializeObject(updateForm), Encoding.UTF8, "application/json"));
             response0.StatusCode.Should().BeEquivalentTo(StatusCodes.Status204NoContent);
 
-            var response1 = await Client.GetAsync("/api/books/1");
+            var response1 = await Client.GetAsync("/api/rooms/1");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
 
-            var book = JsonConvert.DeserializeObject<Book>(response1.Content.ReadAsStringAsync().Result);
+            var room = JsonConvert.DeserializeObject<Room>(response1.Content.ReadAsStringAsync().Result);
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            book.Title.Should().Be(newTitle);
-            book.Body.Should().Be(newBody);
+            room.Category.Should().Be(updatedCategory);
+            room.IsAvailable.Should().Be(false);
+            room.Floor.Should().Be(newFloor);
 
-            var value = response1.Headers.GetValues("requestCounter").FirstOrDefault();
-            value.Should().Be("6");
+            //var value = response1.Headers.GetValues("requestCounter").FirstOrDefault();
+            //value.Should().Be("6");
         }
 
         private void SetUpClient()
