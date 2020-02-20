@@ -10,20 +10,20 @@ namespace TestProject.WebAPI.Data
             : base(options)
         { }
 
-        public DbSet<Book> Books { get; set; }
+        public DbSet<Ticket> Tickets { get; set; }
     }
 
-    public class Book
+    public class Ticket
     {
         [Key]
         public int Id { get; set; }
 
         public string Title { get; set; }
 
-        public string AuthorName { get; set; }
+        public string Description { get; set; }
 
-        public string Body { get; set; }
+        public int Count { get; set; }
 
-        public DateTime PublishedDate { get; set; }
+        public DateTime EventDate { get; set; }
     }
 }

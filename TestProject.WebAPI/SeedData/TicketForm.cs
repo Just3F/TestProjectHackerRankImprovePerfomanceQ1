@@ -3,8 +3,11 @@ using Newtonsoft.Json;
 
 namespace TestProject.WebAPI.SeedData
 {
-    public class CreateBookForm
+    public class TicketForm
     {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
         [JsonProperty("title")]
         public string Title { get; set; }
 
