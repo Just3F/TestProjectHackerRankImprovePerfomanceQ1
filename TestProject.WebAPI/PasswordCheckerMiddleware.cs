@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Http;
 
 namespace TestProject.WebAPI
 {
-    public class RequestCounterMiddleware
+    public class PasswordCheckerMiddleware
     {
         private readonly RequestDelegate _next;
 
         private int _counter = 0;
 
-        public RequestCounterMiddleware(RequestDelegate next)
+        public PasswordCheckerMiddleware(RequestDelegate next)
         {
             this._next = next;
         }
