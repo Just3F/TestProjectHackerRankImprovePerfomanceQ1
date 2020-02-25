@@ -1,6 +1,6 @@
 version: 1.0
 configuration:
-  has_webserver: true
+  has_webserver: false
   readonly_paths:
     - TestProject.Tests/IntegrationTests.cs
   scoring:
@@ -8,7 +8,7 @@ configuration:
     files: [reports/TestResults.xml]
   ide_config:
     default_open_files:
-      - TestProject.WebAPI/Controllers/BooksController.cs
+      - TestProject.WebAPI/Controllers/RoomsController.cs
     project_menu:
       run: dotnet build;cd TestProject.WebAPI;dotnet run
       install: dotnet build

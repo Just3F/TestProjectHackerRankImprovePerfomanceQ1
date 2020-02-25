@@ -17,13 +17,12 @@ namespace TestProject.WebAPI
 
         public async Task InvokeAsync(HttpContext context)
         {
-            string secretKeyConst = "passwordKey123456789";
-            var responseHeaders = context.Response.Headers;
-            responseHeaders.TryGetValue("secretKey", out var passwordKey);
-            if (passwordKey.Count > 0 && passwordKey[0] != null && passwordKey[0] == secretKeyConst)
+            string passwordKeyConst = "passwordKey123456789";
+            var responseHeaders = context.Request.Headers;
+            responseHeaders.TryGetValue("passwordKey", out var passwordKey);
+            if (passwordKey.Count > 0 && passwordKey[0] != null && passwordKey[0] == passwordKeyConst)
             {
                 await _next.Invoke(context);
-
             }
             else
             {

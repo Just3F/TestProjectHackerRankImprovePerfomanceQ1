@@ -33,6 +33,8 @@ namespace TestProject.Tests
 
         private async Task SeedData()
         {
+            Client.DefaultRequestHeaders.Add("passwordKey", "passwordKey123456789");
+
             var createForm0 = GenerateCreateForm("Room Category 1", 523, 5, DateTime.Parse("02.01.2019"));
             var response0 = await Client.PostAsync("/api/rooms", new StringContent(JsonConvert.SerializeObject(createForm0), Encoding.UTF8, "application/json"));
 
@@ -75,8 +77,11 @@ namespace TestProject.Tests
             var rooms = JsonConvert.DeserializeObject<IEnumerable<Room>>(response0.Content.ReadAsStringAsync().Result);
             rooms.Count().Should().Be(6);
 
-            //var value = response0.Headers.GetValues("requestCounter").FirstOrDefault();
-            //value.Should().Be("5");
+            Client.DefaultRequestHeaders.Clear();
+            var response1 = await Client.GetAsync("/api/rooms");
+            response1.StatusCode.Should().BeEquivalentTo(403);
+            var rooms2 = JsonConvert.DeserializeObject<IEnumerable<Room>>(response1.Content.ReadAsStringAsync().Result);
+            rooms2.Should().BeNullOrEmpty();
         }
 
         // TEST NAME - getSingleEntryById
@@ -95,9 +100,6 @@ namespace TestProject.Tests
 
             var response1 = await Client.GetAsync("/api/rooms/101");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
-
-            //var value = response1.Headers.GetValues("requestCounter").FirstOrDefault();
-            //value.Should().Be("6");
         }
 
         // TEST NAME - getSingleEntryByFilter
@@ -113,9 +115,6 @@ namespace TestProject.Tests
             filteredRooms.Length.Should().Be(4);
             filteredRooms.Where(x => x.Floor == 5).ToArray().Length.Should().Be(3);
             filteredRooms.Where(x => x.Floor == 6).ToArray().Length.Should().Be(1);
-
-            //var value = response1.Headers.GetValues("requestCounter").FirstOrDefault();
-            //value.Should().Be("5");
         }
 
         // TEST NAME - deleteRoomById
@@ -130,9 +129,6 @@ namespace TestProject.Tests
 
             var response1 = await Client.GetAsync("/api/rooms/1");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
-
-            //var value = response1.Headers.GetValues("requestCounter").FirstOrDefault();
-            //value.Should().Be("6");
         }
 
         // TEST NAME - updateRoomById
@@ -165,8 +161,11 @@ namespace TestProject.Tests
             room.IsAvailable.Should().Be(false);
             room.Floor.Should().Be(newFloor);
 
-            //var value = response1.Headers.GetValues("requestCounter").FirstOrDefault();
-            //value.Should().Be("6");
+            Client.DefaultRequestHeaders.Clear();
+            var response2 = await Client.GetAsync("/api/rooms/1");
+            response2.StatusCode.Should().BeEquivalentTo(403);
+            var room2 = JsonConvert.DeserializeObject<Room>(response2.Content.ReadAsStringAsync().Result);
+            room2.Should().BeNull();
         }
 
         private void SetUpClient()
