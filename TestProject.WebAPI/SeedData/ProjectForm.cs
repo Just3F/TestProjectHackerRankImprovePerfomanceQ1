@@ -3,24 +3,18 @@ using Newtonsoft.Json;
 
 namespace TestProject.WebAPI.SeedData
 {
-    public class RoomForm
+    public class ProjectForm
     {
         [JsonProperty("id")]
         public int Id { get; set; }
 
-        [JsonProperty("category")]
-        public string Category { get; set; }
-
-        [JsonProperty("number")]
-        public int Number { get; set; }
-
-        [JsonProperty("floor")]
-        public int Floor { get; set; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
 
         [JsonProperty("isAvailable")]
         public bool IsAvailable { get; set; }
 
-        [JsonProperty("publishedDate")]
+        [JsonProperty("addedDate")]
         public DateTime AddedDate { get; set; }
     }
 }

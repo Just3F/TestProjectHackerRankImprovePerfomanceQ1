@@ -10,19 +10,29 @@ namespace TestProject.WebAPI.Data
             : base(options)
         { }
 
-        public DbSet<Room> Rooms { get; set; }
+        public DbSet<Project> Projects { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 
-    public class Room
+    public class User
     {
         [Key]
         public int Id { get; set; }
 
-        public string Category { get; set; }
+        public string Name { get; set; }
 
-        public int Number { get; set; }
+        public DateTime AddedDate { get; set; }
 
-        public int Floor { get; set; }
+        public int ProjectId { get; set; }
+        public virtual Project Project { get; set; }
+    }
+
+    public class Project
+    {
+        [Key]
+        public int Id { get; set; }
+
+        public string Name { get; set; }
 
         public bool IsAvailable { get; set; }
 
