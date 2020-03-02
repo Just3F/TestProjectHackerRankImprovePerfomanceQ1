@@ -1,0 +1,44 @@
+1.	Question: https://www.hackerrank.com/work/tests/698608/questions - Book library api (this question about middleware to calculate requests count)
+
+	Solution: 
+	Git: https://github.com/Just3F/TestProjectHackerRankImprovePerfomanceQ1/tree/test3_Library/TestProject.WebAPI
+	Files for change:
+	- TestProject.WebAPI/Controllers/BooksController.cs
+	- TestProject.WebAPI/RequestCounterMiddleware.cs
+	- TestProject.WebAPI/Startup.cs
+
+
+2.	Question: https://www.hackerrank.com/work/tests/695538/questions - News feed api (this question about Memory hash, this is .net core Mechanism that allows storing data in hash)
+
+	Solution: 
+	Git: https://github.com/Just3F/TestProjectHackerRankImprovePerfomanceQ1/tree/test2
+	Files for change:
+	- TestProject.WebAPI/Controllers/NewsFeedController.cs
+
+
+3.	Question: https://www.hackerrank.com/work/tests/687285/questions - Car catalog api (this question about Memory hash, this is .net core Mechanism that allows storing data in hash)
+
+	Solution: 
+	Git: https://github.com/Just3F/TestProjectHackerRankImprovePerfomanceQ1/tree/test
+	Files for change:
+	- TestProject.WebAPI/Controllers/CarsController.cs
+
+
+4.	Question: https://www.hackerrank.com/work/tests/722385/questions - Rooms monitoring service api (this question is about middleware to check header with specific value)
+
+	Solution: 
+	Git: https://github.com/Just3F/TestProjectHackerRankImprovePerfomanceQ1/tree/test6_roomsMonitoring
+	Files for change:
+	- TestProject.WebAPI/Controllers/RoomsController.cs
+	- TestProject.WebAPI/PasswordCheckerMiddleware.cs
+	- TestProject.WebAPI/Startup.cs
+	
+	
+5.	Question: https://www.hackerrank.com/work/tests/722385/questions - Rooms monitoring service api (this question is about middleware to check header with specific value)
+
+	Solution: 
+	Git: https://github.com/Just3F/TestProjectHackerRankImprovePerfomanceQ1/tree/test6_roomsMonitoring
+	Files for change:
+	- TestProject.WebAPI/Controllers/RoomsController.cs
+	- TestProject.WebAPI/PasswordCheckerMiddleware.cs
+	- TestProject.WebAPI/Startup.cs

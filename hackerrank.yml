@@ -8,7 +8,7 @@ configuration:
     files: [reports/TestResults.xml]
   ide_config:
     default_open_files:
-      - TestProject.WebAPI/Controllers/RoomsController.cs
+      - TestProject.WebAPI/Controllers/ProjectsController.cs
     project_menu:
       run: dotnet build;cd TestProject.WebAPI;dotnet run
       install: dotnet build
