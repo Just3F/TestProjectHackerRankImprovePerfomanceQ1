@@ -66,25 +66,31 @@ namespace TestProject.Tests
         }
 
         // TEST NAME - getAllEntriesById
-        // TEST DESCRIPTION - It finds all projects in Database
+        // TEST DESCRIPTION - It finds all projects in Database and user for the created project
         [Fact]
         public async Task Test1()
         {
             await SeedData();
 
             var response0 = await Client.GetAsync("/api/projects");
-            response0.StatusCode.Should().BeEquivalentTo(200);
+            response0.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
             var projects = JsonConvert.DeserializeObject<IEnumerable<Project>>(response0.Content.ReadAsStringAsync().Result).ToList();
-            projects.Count().Should().Be(4);
+            projects.Count.Should().Be(4);
 
             var project = projects.FirstOrDefault(x => x.Name == "Project Name 1");
             project.Should().NotBeNull();
 
-            await SeedUser("test user", project.Id);
+            await SeedUser("test user 1", project.Id);
+            await SeedUser("test user 2", project.Id);
+            var response1 = await Client.GetAsync($"/api/projects/{project.Id}/users");
+            response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
+            var users = JsonConvert.DeserializeObject<IEnumerable<User>>(response1.Content.ReadAsStringAsync().Result).ToList();
+            users.Count.Should().Be(2);
+
         }
 
         // TEST NAME - getSingleEntryById
-        // TEST DESCRIPTION - It finds single room by ID
+        // TEST DESCRIPTION - It finds single project by ID
         [Fact]
         public async Task Test2()
         {
@@ -93,30 +99,54 @@ namespace TestProject.Tests
             var response0 = await Client.GetAsync("/api/projects/1");
             response0.StatusCode.Should().BeEquivalentTo(200);
 
-            var room = JsonConvert.DeserializeObject<Project>(response0.Content.ReadAsStringAsync().Result);
-            room.Name.Should().Be("Project Name 1");
+            var project = JsonConvert.DeserializeObject<Project>(response0.Content.ReadAsStringAsync().Result);
+            project.Name.Should().Be("Project Name 1");
 
             var response1 = await Client.GetAsync("/api/projects/101");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
+
+            await SeedUser("test user", project.Id);
+            var response2 = await Client.GetAsync($"/api/projects/21312/users/1");
+            response2.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
+
+            await SeedUser("test user", project.Id);
+            var response3 = await Client.GetAsync($"/api/projects/{project.Id}/users/1");
+            response3.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
+            var user = JsonConvert.DeserializeObject<User>(response3.Content.ReadAsStringAsync().Result);
+            user.Name.Should().Be("test user");
+            user.ProjectId.Should().Be(project.Id);
         }
 
         // TEST NAME - getSingleEntryByFilter
-        // TEST DESCRIPTION - It finds single room by ID
+        // TEST DESCRIPTION - It finds single user for project by ID
         [Fact]
         public async Task Test3()
         {
             await SeedData();
 
-            var response1 = await Client.GetAsync("/api/projects?Floors=5&Floors=6");
+            var response1 = await Client.GetAsync("/api/projects");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
             var filteredProjects = JsonConvert.DeserializeObject<IEnumerable<Project>>(response1.Content.ReadAsStringAsync().Result).ToArray();
             filteredProjects.Length.Should().Be(4);
-            //filteredProjects.Where(x => x.Floor == 5).ToArray().Length.Should().Be(3);
-            //filteredProjects.Where(x => x.Floor == 6).ToArray().Length.Should().Be(1);
+
+            await SeedUser("test user 1", 1);
+            await SeedUser("test user 2", 1);
+            var response2 = await Client.GetAsync($"/api/projects/2/users");
+            response2.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
+            var users = JsonConvert.DeserializeObject<IEnumerable<User>>(response2.Content.ReadAsStringAsync().Result).ToList();
+            users.Count.Should().Be(0);
+            
+            var response3 = await Client.GetAsync($"/api/projects/1/users");
+            response3.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
+            var users2 = JsonConvert.DeserializeObject<IEnumerable<User>>(response3.Content.ReadAsStringAsync().Result).ToList();
+            users2.Count.Should().Be(2);
+
+            var response4 = await Client.GetAsync($"/api/projects/31232/users");
+            response4.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
         }
 
-        // TEST NAME - deleteRoomById
-        // TEST DESCRIPTION - Check delete room web api end point
+        // TEST NAME - deleteProjectById
+        // TEST DESCRIPTION - Check delete project web api end point
         [Fact]
         public async Task Test4()
         {
@@ -129,20 +159,19 @@ namespace TestProject.Tests
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
         }
 
-        // TEST NAME - updateRoomById
-        // TEST DESCRIPTION - Check update room web api end point
+        // TEST NAME - updateProjectById
+        // TEST DESCRIPTION - Check update project web api end point
         [Fact]
         public async Task Test5()
         {
             await SeedData();
 
-            var newFloor = 5;
-            var updatedCategory = "Updated projectName";
+            var updatedProjectName = "Updated projectName";
 
             var updateForm = new ProjectForm()
             {
                 Id = 1,
-                Name = updatedCategory,
+                Name = updatedProjectName,
                 IsAvailable = false
             };
 
@@ -152,16 +181,37 @@ namespace TestProject.Tests
             var response1 = await Client.GetAsync("/api/projects/1");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
 
-            var room = JsonConvert.DeserializeObject<Project>(response1.Content.ReadAsStringAsync().Result);
+            var project = JsonConvert.DeserializeObject<Project>(response1.Content.ReadAsStringAsync().Result);
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            room.Name.Should().Be(updatedCategory);
-            room.IsAvailable.Should().Be(false);
+            project.Name.Should().Be(updatedProjectName);
+            project.IsAvailable.Should().Be(false);
+        }
 
-            Client.DefaultRequestHeaders.Clear();
-            var response2 = await Client.GetAsync("/api/projects/1");
-            response2.StatusCode.Should().BeEquivalentTo(403);
-            var room2 = JsonConvert.DeserializeObject<Project>(response2.Content.ReadAsStringAsync().Result);
-            room2.Should().BeNull();
+        // TEST NAME - updateUserById
+        // TEST DESCRIPTION - Check update user web api end point
+        [Fact]
+        public async Task Test6()
+        {
+            await SeedData();
+            await SeedUser("test user 1", 1);
+
+            var updatedUsername = "Updated username";
+
+            var updateForm = new UserForm
+            {
+                Id = 1,
+                Name = updatedUsername,
+            };
+
+            var response0 = await Client.PutAsync("/api/projects/1/users", new StringContent(JsonConvert.SerializeObject(updateForm), Encoding.UTF8, "application/json"));
+            response0.StatusCode.Should().BeEquivalentTo(StatusCodes.Status204NoContent);
+
+            var response1 = await Client.GetAsync("/api/projects/1/users/1");
+            response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
+
+            var user = JsonConvert.DeserializeObject<User>(response1.Content.ReadAsStringAsync().Result);
+            response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
+            user.Name.Should().Be(updatedUsername);
         }
 
         private void SetUpClient()

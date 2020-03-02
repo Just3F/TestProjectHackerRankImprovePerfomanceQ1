@@ -36,6 +36,10 @@ namespace TestProject.WebAPI.Controllers
         [HttpGet("")]
         public async Task<IActionResult> GetAll(int projectId)
         {
+            var project = (await _projectsService.Get(new[] { projectId })).FirstOrDefault();
+            if (project == null)
+                return NotFound("Project");
+
             var newsItems = await _usersService.Get(projectId, null);
             return Ok(newsItems);
         }
@@ -51,8 +55,8 @@ namespace TestProject.WebAPI.Controllers
             return Ok(user);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int projectId, int id, User user)
+        [HttpPut]
+        public async Task<IActionResult> Update(int projectId, User user)
         {
             var project = (await _projectsService.Get(new[] { projectId })).FirstOrDefault();
             if (project == null)
@@ -62,10 +66,10 @@ namespace TestProject.WebAPI.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int projectId, int id)
+        [HttpDelete("{userId}")]
+        public async Task<IActionResult> Delete(int projectId, int userId)
         {
-            var user = (await _usersService.Get(projectId, new[] { id })).FirstOrDefault();
+            var user = (await _usersService.Get(projectId, new[] { userId })).FirstOrDefault();
             if (user == null)
                 return NotFound();
 
