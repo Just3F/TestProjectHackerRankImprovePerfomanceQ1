@@ -34,11 +34,11 @@
 	- TestProject.WebAPI/Startup.cs
 	
 	
-5.	Question: https://www.hackerrank.com/work/tests/722385/questions - Rooms monitoring service api (this question is about middleware to check header with specific value)
+5.	Question: https://www.hackerrank.com/work/tests/728167/questions - .NET Project api service (routing mechanism)
 
 	Solution: 
-	Git: https://github.com/Just3F/TestProjectHackerRankImprovePerfomanceQ1/tree/test6_roomsMonitoring
+	Git: https://github.com/Just3F/TestProjectHackerRankImprovePerfomanceQ1/tree/test7_projectsusers
 	Files for change:
-	- TestProject.WebAPI/Controllers/RoomsController.cs
-	- TestProject.WebAPI/PasswordCheckerMiddleware.cs
+	- TestProject.WebAPI/Controllers/ProjectsController.cs
+	- TestProject.WebAPI/Controllers/UsersController.cs
 	- TestProject.WebAPI/Startup.cs
