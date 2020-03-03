@@ -7,18 +7,18 @@ using TestProject.WebAPI.Data;
 
 namespace TestProject.WebAPI.Services
 {
-    public class UsersService : IUsersService
+    public class ReportsService : IReportsService
     {
         private readonly TestProjectContext _testProjectContext;
 
-        public UsersService(TestProjectContext testProjectContext)
+        public ReportsService(TestProjectContext testProjectContext)
         {
             _testProjectContext = testProjectContext;
         }
 
-        public async Task<IEnumerable<User>> Get(int projectId, int[] ids)
+        public async Task<IEnumerable<Report>> Get(int documentId, int[] ids)
         {
-            var users = _testProjectContext.Users.Where(x => x.ProjectId == projectId).AsQueryable();
+            var users = _testProjectContext.Reports.Where(x => x.DocumentId == documentId).AsQueryable();
 
             if (ids != null && ids.Any())
                 users = users.Where(x => ids.Contains(x.Id));
@@ -26,44 +26,42 @@ namespace TestProject.WebAPI.Services
             return await users.ToListAsync();
         }
 
-        public async Task<User> Add(User user)
+        public async Task<Report> Add(Report report)
         {
-
-            await _testProjectContext.Users.AddAsync(user);
-            user.AddedDate = DateTime.UtcNow;
+            await _testProjectContext.Reports.AddAsync(report);
 
             await _testProjectContext.SaveChangesAsync();
-            return user;
+            return report;
         }
 
-        public async Task<User> Update(User user)
+        public async Task<Report> Update(Report report)
         {
-            var userForChanges = await _testProjectContext.Users.SingleAsync(x => x.Id == user.Id);
+            var userForChanges = await _testProjectContext.Reports.SingleAsync(x => x.Id == report.Id);
 
-            userForChanges.Name = user.Name;
+            userForChanges.Name = report.Name;
 
-            _testProjectContext.Users.Update(userForChanges);
+            _testProjectContext.Reports.Update(userForChanges);
             await _testProjectContext.SaveChangesAsync();
-            return user;
+            return report;
         }
 
-        public async Task<bool> Delete(User user)
+        public async Task<bool> Delete(Report report)
         {
-            _testProjectContext.Users.Remove(user);
+            _testProjectContext.Reports.Remove(report);
             await _testProjectContext.SaveChangesAsync();
 
             return true;
         }
     }
 
-    public interface IUsersService
+    public interface IReportsService
     {
-        Task<IEnumerable<User>> Get(int projectId, int[] ids);
+        Task<IEnumerable<Report>> Get(int documentId, int[] ids);
 
-        Task<User> Add(User user);
+        Task<Report> Add(Report report);
 
-        Task<User> Update(User user);
+        Task<Report> Update(Report report);
 
-        Task<bool> Delete(User user);
+        Task<bool> Delete(Report report);
     }
 }

@@ -7,18 +7,18 @@ using TestProject.WebAPI.Data;
 
 namespace TestProject.WebAPI.Services
 {
-    public class ProjectsService : IProjectsService
+    public class DocumentsService : IDocumentsService
     {
         private readonly TestProjectContext _testProjectContext;
 
-        public ProjectsService(TestProjectContext testProjectContext)
+        public DocumentsService(TestProjectContext testProjectContext)
         {
             _testProjectContext = testProjectContext;
         }
 
-        public async Task<IEnumerable<Project>> Get(int[] ids)
+        public async Task<IEnumerable<Document>> Get(int[] ids)
         {
-            var projects = _testProjectContext.Projects.AsQueryable();
+            var projects = _testProjectContext.Documents.AsQueryable();
 
             if (ids != null && ids.Any())
                 projects = projects.Where(x => ids.Contains(x.Id));
@@ -26,50 +26,49 @@ namespace TestProject.WebAPI.Services
             return await projects.ToListAsync();
         }
 
-        public async Task<Project> Add(Project project)
+        public async Task<Document> Add(Document document)
         {
-            await _testProjectContext.Projects.AddAsync(project);
-            project.AddedDate = DateTime.UtcNow;
+            await _testProjectContext.Documents.AddAsync(document);
 
             await _testProjectContext.SaveChangesAsync();
-            return project;
+            return document;
         }
 
-        public async Task<IEnumerable<Project>> AddRange(IEnumerable<Project> projects)
+        public async Task<IEnumerable<Document>> AddRange(IEnumerable<Document> projects)
         {
-            await _testProjectContext.Projects.AddRangeAsync(projects);
+            await _testProjectContext.Documents.AddRangeAsync(projects);
             await _testProjectContext.SaveChangesAsync();
             return projects;
         }
 
-        public async Task<Project> Update(Project project)
+        public async Task<Document> Update(Document document)
         {
-            var projectForChanges = await _testProjectContext.Projects.SingleAsync(x => x.Id == project.Id);
-            projectForChanges.IsAvailable = project.IsAvailable;
-            projectForChanges.Name = project.Name;
+            var projectForChanges = await _testProjectContext.Documents.SingleAsync(x => x.Id == document.Id);
+            projectForChanges.Name = document.Name;
+            projectForChanges.Body = document.Body;
 
-            _testProjectContext.Projects.Update(projectForChanges);
+            _testProjectContext.Documents.Update(projectForChanges);
             await _testProjectContext.SaveChangesAsync();
-            return project;
+            return document;
         }
 
-        public async Task<bool> Delete(Project project)
+        public async Task<bool> Delete(Document document)
         {
-            _testProjectContext.Projects.Remove(project);
+            _testProjectContext.Documents.Remove(document);
             await _testProjectContext.SaveChangesAsync();
 
             return true;
         }
     }
 
-    public interface IProjectsService
+    public interface IDocumentsService
     {
-        Task<IEnumerable<Project>> Get(int[] ids);
+        Task<IEnumerable<Document>> Get(int[] ids);
 
-        Task<Project> Add(Project project);
+        Task<Document> Add(Document document);
 
-        Task<Project> Update(Project project);
+        Task<Document> Update(Document document);
 
-        Task<bool> Delete(Project project);
+        Task<bool> Delete(Document document);
     }
 }

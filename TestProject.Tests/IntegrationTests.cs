@@ -33,16 +33,16 @@ namespace TestProject.Tests
 
         private async Task SeedData()
         {
-            var createForm0 = GenerateProjectCreateForm("Project Name 1");
+            var createForm0 = GenerateProjectCreateForm("Document Name 1");
             var response0 = await Client.PostAsync("/api/projects", new StringContent(JsonConvert.SerializeObject(createForm0), Encoding.UTF8, "application/json"));
 
-            var createForm1 = GenerateProjectCreateForm("Project Name 2");
+            var createForm1 = GenerateProjectCreateForm("Document Name 2");
             var response1 = await Client.PostAsync("/api/projects", new StringContent(JsonConvert.SerializeObject(createForm1), Encoding.UTF8, "application/json"));
 
-            var createForm2 = GenerateProjectCreateForm("Project Name 3");
+            var createForm2 = GenerateProjectCreateForm("Document Name 3");
             var response2 = await Client.PostAsync("/api/projects", new StringContent(JsonConvert.SerializeObject(createForm2), Encoding.UTF8, "application/json"));
 
-            var createForm3 = GenerateProjectCreateForm("Project Name 4");
+            var createForm3 = GenerateProjectCreateForm("Document Name 4");
             var response3 = await Client.PostAsync("/api/projects", new StringContent(JsonConvert.SerializeObject(createForm3), Encoding.UTF8, "application/json"));
         }
 
@@ -66,7 +66,7 @@ namespace TestProject.Tests
         }
 
         // TEST NAME - getAllEntriesById
-        // TEST DESCRIPTION - It finds all projects in Database and user for the created project
+        // TEST DESCRIPTION - It finds all projects in Database and user for the created document
         [Fact]
         public async Task Test1()
         {
@@ -74,23 +74,23 @@ namespace TestProject.Tests
 
             var response0 = await Client.GetAsync("/api/projects");
             response0.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var projects = JsonConvert.DeserializeObject<IEnumerable<Project>>(response0.Content.ReadAsStringAsync().Result).ToList();
+            var projects = JsonConvert.DeserializeObject<IEnumerable<Document>>(response0.Content.ReadAsStringAsync().Result).ToList();
             projects.Count.Should().Be(4);
 
-            var project = projects.FirstOrDefault(x => x.Name == "Project Name 1");
+            var project = projects.FirstOrDefault(x => x.Name == "Document Name 1");
             project.Should().NotBeNull();
 
             await SeedUser("test user 1", project.Id);
             await SeedUser("test user 2", project.Id);
             var response1 = await Client.GetAsync($"/api/projects/{project.Id}/users");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var users = JsonConvert.DeserializeObject<IEnumerable<User>>(response1.Content.ReadAsStringAsync().Result).ToList();
+            var users = JsonConvert.DeserializeObject<IEnumerable<Report>>(response1.Content.ReadAsStringAsync().Result).ToList();
             users.Count.Should().Be(2);
 
         }
 
         // TEST NAME - getSingleEntryById
-        // TEST DESCRIPTION - It finds single project by ID
+        // TEST DESCRIPTION - It finds single document by ID
         [Fact]
         public async Task Test2()
         {
@@ -99,8 +99,8 @@ namespace TestProject.Tests
             var response0 = await Client.GetAsync("/api/projects/1");
             response0.StatusCode.Should().BeEquivalentTo(200);
 
-            var project = JsonConvert.DeserializeObject<Project>(response0.Content.ReadAsStringAsync().Result);
-            project.Name.Should().Be("Project Name 1");
+            var project = JsonConvert.DeserializeObject<Document>(response0.Content.ReadAsStringAsync().Result);
+            project.Name.Should().Be("Document Name 1");
 
             var response1 = await Client.GetAsync("/api/projects/101");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
@@ -112,13 +112,13 @@ namespace TestProject.Tests
             await SeedUser("test user", project.Id);
             var response3 = await Client.GetAsync($"/api/projects/{project.Id}/users/1");
             response3.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var user = JsonConvert.DeserializeObject<User>(response3.Content.ReadAsStringAsync().Result);
+            var user = JsonConvert.DeserializeObject<Report>(response3.Content.ReadAsStringAsync().Result);
             user.Name.Should().Be("test user");
-            user.ProjectId.Should().Be(project.Id);
+            user.DocumentId.Should().Be(project.Id);
         }
 
         // TEST NAME - getSingleEntryByFilter
-        // TEST DESCRIPTION - It finds single user for project by ID
+        // TEST DESCRIPTION - It finds single user for document by ID
         [Fact]
         public async Task Test3()
         {
@@ -126,19 +126,19 @@ namespace TestProject.Tests
 
             var response1 = await Client.GetAsync("/api/projects");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var filteredProjects = JsonConvert.DeserializeObject<IEnumerable<Project>>(response1.Content.ReadAsStringAsync().Result).ToArray();
+            var filteredProjects = JsonConvert.DeserializeObject<IEnumerable<Document>>(response1.Content.ReadAsStringAsync().Result).ToArray();
             filteredProjects.Length.Should().Be(4);
 
             await SeedUser("test user 1", 1);
             await SeedUser("test user 2", 1);
             var response2 = await Client.GetAsync($"/api/projects/2/users");
             response2.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var users = JsonConvert.DeserializeObject<IEnumerable<User>>(response2.Content.ReadAsStringAsync().Result).ToList();
+            var users = JsonConvert.DeserializeObject<IEnumerable<Report>>(response2.Content.ReadAsStringAsync().Result).ToList();
             users.Count.Should().Be(0);
             
             var response3 = await Client.GetAsync($"/api/projects/1/users");
             response3.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var users2 = JsonConvert.DeserializeObject<IEnumerable<User>>(response3.Content.ReadAsStringAsync().Result).ToList();
+            var users2 = JsonConvert.DeserializeObject<IEnumerable<Report>>(response3.Content.ReadAsStringAsync().Result).ToList();
             users2.Count.Should().Be(2);
 
             var response4 = await Client.GetAsync($"/api/projects/31232/users");
@@ -146,7 +146,7 @@ namespace TestProject.Tests
         }
 
         // TEST NAME - deleteProjectById
-        // TEST DESCRIPTION - Check delete project web api end point
+        // TEST DESCRIPTION - Check delete document web api end point
         [Fact]
         public async Task Test4()
         {
@@ -160,7 +160,7 @@ namespace TestProject.Tests
         }
 
         // TEST NAME - updateProjectById
-        // TEST DESCRIPTION - Check update project web api end point
+        // TEST DESCRIPTION - Check update document web api end point
         [Fact]
         public async Task Test5()
         {
@@ -181,10 +181,9 @@ namespace TestProject.Tests
             var response1 = await Client.GetAsync("/api/projects/1");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
 
-            var project = JsonConvert.DeserializeObject<Project>(response1.Content.ReadAsStringAsync().Result);
+            var project = JsonConvert.DeserializeObject<Document>(response1.Content.ReadAsStringAsync().Result);
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
             project.Name.Should().Be(updatedProjectName);
-            project.IsAvailable.Should().Be(false);
         }
 
         // TEST NAME - updateUserById
@@ -209,7 +208,7 @@ namespace TestProject.Tests
             var response1 = await Client.GetAsync("/api/projects/1/users/1");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
 
-            var user = JsonConvert.DeserializeObject<User>(response1.Content.ReadAsStringAsync().Result);
+            var user = JsonConvert.DeserializeObject<Report>(response1.Content.ReadAsStringAsync().Result);
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
             user.Name.Should().Be(updatedUsername);
         }
