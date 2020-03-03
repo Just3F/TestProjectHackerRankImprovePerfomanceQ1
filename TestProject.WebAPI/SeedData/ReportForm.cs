@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace TestProject.WebAPI.SeedData
 {
-    public class UserForm
+    public class ReportForm
     {
         [JsonProperty("id")]
         public int Id { get; set; }
@@ -11,10 +11,10 @@ namespace TestProject.WebAPI.SeedData
         [JsonProperty("name")]
         public string Name { get; set; }
 
-        [JsonProperty("projectId")]
-        public int ProjectId { get; set; }
+        [JsonProperty("category")]
+        public string Category { get; set; }
 
-        [JsonProperty("addedDate")]
-        public DateTime AddedDate { get; set; }
+        [JsonProperty("documentId")]
+        public int DocumentId { get; set; }
     }
 }
