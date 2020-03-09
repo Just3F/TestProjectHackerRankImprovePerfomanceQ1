@@ -42,3 +42,13 @@
 	- TestProject.WebAPI/Controllers/ProjectsController.cs
 	- TestProject.WebAPI/Controllers/UsersController.cs
 	- TestProject.WebAPI/Startup.cs
+	
+	
+6.	Question: https://www.hackerrank.com/work/tests/729801/questions - .NET Document API service (routing mechanism)
+
+	Solution: 
+	Git: https://github.com/Just3F/TestProjectHackerRankImprovePerfomanceQ1/tree/test7_projectsusers
+	Files for change:
+	- TestProject.WebAPI/Controllers/ProjectsController.cs
+	- TestProject.WebAPI/Controllers/UsersController.cs
+	- TestProject.WebAPI/Startup.cs
