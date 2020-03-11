@@ -2,7 +2,7 @@
 
 namespace TestProject.WebAPI.SeedData
 {
-    public class DocumentForm
+    public class LibraryForm
     {
         [JsonProperty("id")]
         public int Id { get; set; }
@@ -10,7 +10,7 @@ namespace TestProject.WebAPI.SeedData
         [JsonProperty("name")]
         public string Name { get; set; }
 
-        [JsonProperty("body")]
-        public string Body { get; set; }
+        [JsonProperty("location")]
+        public string Location { get; set; }
     }
 }

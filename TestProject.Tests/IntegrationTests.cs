@@ -32,186 +32,186 @@ namespace TestProject.Tests
 
         private async Task SeedData()
         {
-            var createForm0 = GenerateDocumentCreateForm("Document Name 1");
-            var response0 = await Client.PostAsync("/api/documents", new StringContent(JsonConvert.SerializeObject(createForm0), Encoding.UTF8, "application/json"));
+            var createForm0 = GenerateLibraryCreateForm("Library Name 1");
+            var response0 = await Client.PostAsync("/api/libraries", new StringContent(JsonConvert.SerializeObject(createForm0), Encoding.UTF8, "application/json"));
 
-            var createForm1 = GenerateDocumentCreateForm("Document Name 2");
-            var response1 = await Client.PostAsync("/api/documents", new StringContent(JsonConvert.SerializeObject(createForm1), Encoding.UTF8, "application/json"));
+            var createForm1 = GenerateLibraryCreateForm("Library Name 2");
+            var response1 = await Client.PostAsync("/api/libraries", new StringContent(JsonConvert.SerializeObject(createForm1), Encoding.UTF8, "application/json"));
 
-            var createForm2 = GenerateDocumentCreateForm("Document Name 3");
-            var response2 = await Client.PostAsync("/api/documents", new StringContent(JsonConvert.SerializeObject(createForm2), Encoding.UTF8, "application/json"));
+            var createForm2 = GenerateLibraryCreateForm("Library Name 3");
+            var response2 = await Client.PostAsync("/api/libraries", new StringContent(JsonConvert.SerializeObject(createForm2), Encoding.UTF8, "application/json"));
 
-            var createForm3 = GenerateDocumentCreateForm("Document Name 4");
-            var response3 = await Client.PostAsync("/api/documents", new StringContent(JsonConvert.SerializeObject(createForm3), Encoding.UTF8, "application/json"));
+            var createForm3 = GenerateLibraryCreateForm("Library Name 4");
+            var response3 = await Client.PostAsync("/api/libraries", new StringContent(JsonConvert.SerializeObject(createForm3), Encoding.UTF8, "application/json"));
         }
 
-        public async Task SeedReport(string reportName, int projectId)
+        public async Task SeedBook(string bookName, int projectId)
         {
-            var reportForm = new ReportForm
+            var bookForm = new BookForm
             {
-                Name = reportName,
-                DocumentId = projectId
+                Name = bookName,
+                LibraryId = projectId
             };
-            var response1 = await Client.PostAsync($"/api/documents/{projectId}/reports",
-                new StringContent(JsonConvert.SerializeObject(reportForm), Encoding.UTF8, "application/json"));
+            var response1 = await Client.PostAsync($"/api/libraries/{projectId}/books",
+                new StringContent(JsonConvert.SerializeObject(bookForm), Encoding.UTF8, "application/json"));
         }
 
-        private DocumentForm GenerateDocumentCreateForm(string projectName)
+        private LibraryForm GenerateLibraryCreateForm(string projectName)
         {
-            return new DocumentForm
+            return new LibraryForm
             {
                 Name = projectName,
             };
         }
 
         // TEST NAME - getAllEntriesById
-        // TEST DESCRIPTION - It finds all documents in Database and report for the created document
+        // TEST DESCRIPTION - It finds all libraries in Database and book for the created library
         [Fact]
         public async Task Test1()
         {
             await SeedData();
 
-            var response0 = await Client.GetAsync("/api/documents");
+            var response0 = await Client.GetAsync("/api/libraries");
             response0.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var documents = JsonConvert.DeserializeObject<IEnumerable<Document>>(response0.Content.ReadAsStringAsync().Result).ToList();
-            documents.Count.Should().Be(4);
+            var libraries = JsonConvert.DeserializeObject<IEnumerable<Library>>(response0.Content.ReadAsStringAsync().Result).ToList();
+            libraries.Count.Should().Be(4);
 
-            var project = documents.FirstOrDefault(x => x.Name == "Document Name 1");
+            var project = libraries.FirstOrDefault(x => x.Name == "Library Name 1");
             project.Should().NotBeNull();
 
-            await SeedReport("test report 1", project.Id);
-            await SeedReport("test report 2", project.Id);
-            var response1 = await Client.GetAsync($"/api/documents/{project.Id}/reports");
+            await SeedBook("test book 1", project.Id);
+            await SeedBook("test book 2", project.Id);
+            var response1 = await Client.GetAsync($"/api/libraries/{project.Id}/books");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var reports = JsonConvert.DeserializeObject<IEnumerable<Report>>(response1.Content.ReadAsStringAsync().Result).ToList();
-            reports.Count.Should().Be(2);
+            var books = JsonConvert.DeserializeObject<IEnumerable<Book>>(response1.Content.ReadAsStringAsync().Result).ToList();
+            books.Count.Should().Be(2);
 
         }
 
         // TEST NAME - getSingleEntryById
-        // TEST DESCRIPTION - It finds single document by ID
+        // TEST DESCRIPTION - It finds single library by ID
         [Fact]
         public async Task Test2()
         {
             await SeedData();
 
-            var response0 = await Client.GetAsync("/api/documents/1");
+            var response0 = await Client.GetAsync("/api/libraries/1");
             response0.StatusCode.Should().BeEquivalentTo(200);
 
-            var project = JsonConvert.DeserializeObject<Document>(response0.Content.ReadAsStringAsync().Result);
-            project.Name.Should().Be("Document Name 1");
+            var project = JsonConvert.DeserializeObject<Library>(response0.Content.ReadAsStringAsync().Result);
+            project.Name.Should().Be("Library Name 1");
 
-            var response1 = await Client.GetAsync("/api/documents/101");
+            var response1 = await Client.GetAsync("/api/libraries/101");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
 
-            await SeedReport("test report", project.Id);
-            var response2 = await Client.GetAsync($"/api/documents/21312/reports/1");
+            await SeedBook("test book", project.Id);
+            var response2 = await Client.GetAsync($"/api/libraries/21312/books/1");
             response2.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
 
-            await SeedReport("test report", project.Id);
-            var response3 = await Client.GetAsync($"/api/documents/{project.Id}/reports/1");
+            await SeedBook("test book", project.Id);
+            var response3 = await Client.GetAsync($"/api/libraries/{project.Id}/books/1");
             response3.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var report = JsonConvert.DeserializeObject<Report>(response3.Content.ReadAsStringAsync().Result);
-            report.Name.Should().Be("test report");
-            report.DocumentId.Should().Be(project.Id);
+            var book = JsonConvert.DeserializeObject<Book>(response3.Content.ReadAsStringAsync().Result);
+            book.Name.Should().Be("test book");
+            book.LibraryId.Should().Be(project.Id);
         }
 
         // TEST NAME - getSingleEntryByFilter
-        // TEST DESCRIPTION - It finds single report for document by ID
+        // TEST DESCRIPTION - It finds single book for library by ID
         [Fact]
         public async Task Test3()
         {
             await SeedData();
 
-            var response1 = await Client.GetAsync("/api/documents");
+            var response1 = await Client.GetAsync("/api/libraries");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var filteredDocuments = JsonConvert.DeserializeObject<IEnumerable<Document>>(response1.Content.ReadAsStringAsync().Result).ToArray();
-            filteredDocuments.Length.Should().Be(4);
+            var filteredLibraries = JsonConvert.DeserializeObject<IEnumerable<Library>>(response1.Content.ReadAsStringAsync().Result).ToArray();
+            filteredLibraries.Length.Should().Be(4);
 
-            await SeedReport("test report 1", 1);
-            await SeedReport("test report 2", 1);
-            var response2 = await Client.GetAsync($"/api/documents/2/reports");
+            await SeedBook("test book 1", 1);
+            await SeedBook("test book 2", 1);
+            var response2 = await Client.GetAsync($"/api/libraries/2/books");
             response2.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var reports = JsonConvert.DeserializeObject<IEnumerable<Report>>(response2.Content.ReadAsStringAsync().Result).ToList();
-            reports.Count.Should().Be(0);
+            var books = JsonConvert.DeserializeObject<IEnumerable<Book>>(response2.Content.ReadAsStringAsync().Result).ToList();
+            books.Count.Should().Be(0);
             
-            var response3 = await Client.GetAsync($"/api/documents/1/reports");
+            var response3 = await Client.GetAsync($"/api/libraries/1/books");
             response3.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var reports2 = JsonConvert.DeserializeObject<IEnumerable<Report>>(response3.Content.ReadAsStringAsync().Result).ToList();
-            reports2.Count.Should().Be(2);
+            var books2 = JsonConvert.DeserializeObject<IEnumerable<Book>>(response3.Content.ReadAsStringAsync().Result).ToList();
+            books2.Count.Should().Be(2);
 
-            var response4 = await Client.GetAsync($"/api/documents/31232/reports");
+            var response4 = await Client.GetAsync($"/api/libraries/31232/books");
             response4.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
         }
 
-        // TEST NAME - deleteDocumentById
-        // TEST DESCRIPTION - Check delete document web api end point
+        // TEST NAME - deleteLibraryById
+        // TEST DESCRIPTION - Check delete library web api end point
         [Fact]
         public async Task Test4()
         {
             await SeedData();
 
-            var response0 = await Client.DeleteAsync("/api/documents/1");
+            var response0 = await Client.DeleteAsync("/api/libraries/1");
             response0.StatusCode.Should().BeEquivalentTo(StatusCodes.Status204NoContent);
 
-            var response1 = await Client.GetAsync("/api/documents/1");
+            var response1 = await Client.GetAsync("/api/libraries/1");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
         }
 
-        // TEST NAME - updateDocumentById
-        // TEST DESCRIPTION - Check update document web api end point
+        // TEST NAME - updateLibraryById
+        // TEST DESCRIPTION - Check update library web api end point
         [Fact]
         public async Task Test5()
         {
             await SeedData();
 
-            var updatedDocumentName = "Updated projectName";
-            var newDocumentBody = "Updated document body";
+            var updatedLibraryName = "Updated projectName";
+            var newLibraryBody = "Updated library body";
 
-            var updateForm = new DocumentForm()
+            var updateForm = new LibraryForm()
             {
                 Id = 1,
-                Name = updatedDocumentName,
-                Body = newDocumentBody
+                Name = updatedLibraryName,
+                Location = newLibraryBody
             };
 
-            var response0 = await Client.PutAsync("/api/documents/1", new StringContent(JsonConvert.SerializeObject(updateForm), Encoding.UTF8, "application/json"));
+            var response0 = await Client.PutAsync("/api/libraries/1", new StringContent(JsonConvert.SerializeObject(updateForm), Encoding.UTF8, "application/json"));
             response0.StatusCode.Should().BeEquivalentTo(StatusCodes.Status204NoContent);
 
-            var response1 = await Client.GetAsync("/api/documents/1");
+            var response1 = await Client.GetAsync("/api/libraries/1");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
 
-            var project = JsonConvert.DeserializeObject<Document>(response1.Content.ReadAsStringAsync().Result);
+            var project = JsonConvert.DeserializeObject<Library>(response1.Content.ReadAsStringAsync().Result);
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            project.Name.Should().Be(updatedDocumentName);
-            project.Body.Should().Be(newDocumentBody);
+            project.Name.Should().Be(updatedLibraryName);
+            project.Location.Should().Be(newLibraryBody);
         }
 
-        // TEST NAME - updateReportById
-        // TEST DESCRIPTION - Check update report web api end point
+        // TEST NAME - updateBookById
+        // TEST DESCRIPTION - Check update book web api end point
         [Fact]
         public async Task Test6()
         {
             await SeedData();
-            await SeedReport("test report 1", 1);
+            await SeedBook("test book 1", 1);
 
-            var updatedReportname = "Updated reportname";
+            var updatedBookname = "Updated bookname";
 
-            var updateForm = new ReportForm
+            var updateForm = new BookForm
             {
                 Id = 1,
-                Name = updatedReportname,
+                Name = updatedBookname,
             };
 
-            var response0 = await Client.PutAsync("/api/documents/1/reports", new StringContent(JsonConvert.SerializeObject(updateForm), Encoding.UTF8, "application/json"));
+            var response0 = await Client.PutAsync("/api/libraries/1/books", new StringContent(JsonConvert.SerializeObject(updateForm), Encoding.UTF8, "application/json"));
             response0.StatusCode.Should().BeEquivalentTo(StatusCodes.Status204NoContent);
 
-            var response1 = await Client.GetAsync("/api/documents/1/reports/1");
+            var response1 = await Client.GetAsync("/api/libraries/1/books/1");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
 
-            var report = JsonConvert.DeserializeObject<Report>(response1.Content.ReadAsStringAsync().Result);
+            var book = JsonConvert.DeserializeObject<Book>(response1.Content.ReadAsStringAsync().Result);
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            report.Name.Should().Be(updatedReportname);
+            book.Name.Should().Be(updatedBookname);
         }
 
         private void SetUpClient()

@@ -25,8 +25,8 @@ namespace TestProject.WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IReportsService, ReportsService>();
-            services.AddScoped<IDocumentsService, DocumentsService>();
+            services.AddScoped<IBooksService, BooksService>();
+            services.AddScoped<ILibrariesService, LibrariesService>();
             services.AddDbContext<TestProjectContext>(options => options.UseLazyLoadingProxies().UseSqlite($"Data Source={DatabaseFileName}"));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddControllers();

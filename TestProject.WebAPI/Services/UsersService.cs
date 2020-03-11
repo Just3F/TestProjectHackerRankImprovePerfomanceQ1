@@ -7,18 +7,18 @@ using TestProject.WebAPI.Data;
 
 namespace TestProject.WebAPI.Services
 {
-    public class ReportsService : IReportsService
+    public class BooksService : IBooksService
     {
         private readonly TestProjectContext _testProjectContext;
 
-        public ReportsService(TestProjectContext testProjectContext)
+        public BooksService(TestProjectContext testProjectContext)
         {
             _testProjectContext = testProjectContext;
         }
 
-        public async Task<IEnumerable<Report>> Get(int documentId, int[] ids)
+        public async Task<IEnumerable<Book>> Get(int libraryId, int[] ids)
         {
-            var users = _testProjectContext.Reports.Where(x => x.DocumentId == documentId).AsQueryable();
+            var users = _testProjectContext.Books.Where(x => x.LibraryId == libraryId).AsQueryable();
 
             if (ids != null && ids.Any())
                 users = users.Where(x => ids.Contains(x.Id));
@@ -26,42 +26,42 @@ namespace TestProject.WebAPI.Services
             return await users.ToListAsync();
         }
 
-        public async Task<Report> Add(Report report)
+        public async Task<Book> Add(Book book)
         {
-            await _testProjectContext.Reports.AddAsync(report);
+            await _testProjectContext.Books.AddAsync(book);
 
             await _testProjectContext.SaveChangesAsync();
-            return report;
+            return book;
         }
 
-        public async Task<Report> Update(Report report)
+        public async Task<Book> Update(Book book)
         {
-            var userForChanges = await _testProjectContext.Reports.SingleAsync(x => x.Id == report.Id);
+            var userForChanges = await _testProjectContext.Books.SingleAsync(x => x.Id == book.Id);
 
-            userForChanges.Name = report.Name;
+            userForChanges.Name = book.Name;
 
-            _testProjectContext.Reports.Update(userForChanges);
+            _testProjectContext.Books.Update(userForChanges);
             await _testProjectContext.SaveChangesAsync();
-            return report;
+            return book;
         }
 
-        public async Task<bool> Delete(Report report)
+        public async Task<bool> Delete(Book book)
         {
-            _testProjectContext.Reports.Remove(report);
+            _testProjectContext.Books.Remove(book);
             await _testProjectContext.SaveChangesAsync();
 
             return true;
         }
     }
 
-    public interface IReportsService
+    public interface IBooksService
     {
-        Task<IEnumerable<Report>> Get(int documentId, int[] ids);
+        Task<IEnumerable<Book>> Get(int libraryId, int[] ids);
 
-        Task<Report> Add(Report report);
+        Task<Book> Add(Book book);
 
-        Task<Report> Update(Report report);
+        Task<Book> Update(Book book);
 
-        Task<bool> Delete(Report report);
+        Task<bool> Delete(Book book);
     }
 }

@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace TestProject.WebAPI.SeedData
 {
-    public class ReportForm
+    public class BookForm
     {
         [JsonProperty("id")]
         public int Id { get; set; }
@@ -14,7 +14,7 @@ namespace TestProject.WebAPI.SeedData
         [JsonProperty("category")]
         public string Category { get; set; }
 
-        [JsonProperty("documentId")]
-        public int DocumentId { get; set; }
+        [JsonProperty("libraryId")]
+        public int LibraryId { get; set; }
     }
 }

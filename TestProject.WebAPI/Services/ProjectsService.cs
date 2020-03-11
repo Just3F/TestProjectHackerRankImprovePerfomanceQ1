@@ -7,18 +7,18 @@ using TestProject.WebAPI.Data;
 
 namespace TestProject.WebAPI.Services
 {
-    public class DocumentsService : IDocumentsService
+    public class LibrariesService : ILibrariesService
     {
         private readonly TestProjectContext _testProjectContext;
 
-        public DocumentsService(TestProjectContext testProjectContext)
+        public LibrariesService(TestProjectContext testProjectContext)
         {
             _testProjectContext = testProjectContext;
         }
 
-        public async Task<IEnumerable<Document>> Get(int[] ids)
+        public async Task<IEnumerable<Library>> Get(int[] ids)
         {
-            var projects = _testProjectContext.Documents.AsQueryable();
+            var projects = _testProjectContext.Libraries.AsQueryable();
 
             if (ids != null && ids.Any())
                 projects = projects.Where(x => ids.Contains(x.Id));
@@ -26,49 +26,49 @@ namespace TestProject.WebAPI.Services
             return await projects.ToListAsync();
         }
 
-        public async Task<Document> Add(Document document)
+        public async Task<Library> Add(Library library)
         {
-            await _testProjectContext.Documents.AddAsync(document);
+            await _testProjectContext.Libraries.AddAsync(library);
 
             await _testProjectContext.SaveChangesAsync();
-            return document;
+            return library;
         }
 
-        public async Task<IEnumerable<Document>> AddRange(IEnumerable<Document> projects)
+        public async Task<IEnumerable<Library>> AddRange(IEnumerable<Library> projects)
         {
-            await _testProjectContext.Documents.AddRangeAsync(projects);
+            await _testProjectContext.Libraries.AddRangeAsync(projects);
             await _testProjectContext.SaveChangesAsync();
             return projects;
         }
 
-        public async Task<Document> Update(Document document)
+        public async Task<Library> Update(Library library)
         {
-            var projectForChanges = await _testProjectContext.Documents.SingleAsync(x => x.Id == document.Id);
-            projectForChanges.Name = document.Name;
-            projectForChanges.Body = document.Body;
+            var projectForChanges = await _testProjectContext.Libraries.SingleAsync(x => x.Id == library.Id);
+            projectForChanges.Name = library.Name;
+            projectForChanges.Location = library.Location;
 
-            _testProjectContext.Documents.Update(projectForChanges);
+            _testProjectContext.Libraries.Update(projectForChanges);
             await _testProjectContext.SaveChangesAsync();
-            return document;
+            return library;
         }
 
-        public async Task<bool> Delete(Document document)
+        public async Task<bool> Delete(Library library)
         {
-            _testProjectContext.Documents.Remove(document);
+            _testProjectContext.Libraries.Remove(library);
             await _testProjectContext.SaveChangesAsync();
 
             return true;
         }
     }
 
-    public interface IDocumentsService
+    public interface ILibrariesService
     {
-        Task<IEnumerable<Document>> Get(int[] ids);
+        Task<IEnumerable<Library>> Get(int[] ids);
 
-        Task<Document> Add(Document document);
+        Task<Library> Add(Library library);
 
-        Task<Document> Update(Document document);
+        Task<Library> Update(Library library);
 
-        Task<bool> Delete(Document document);
+        Task<bool> Delete(Library library);
     }
 }
