@@ -45,22 +45,22 @@ namespace TestProject.Tests
             var response3 = await Client.PostAsync("/api/libraries", new StringContent(JsonConvert.SerializeObject(createForm3), Encoding.UTF8, "application/json"));
         }
 
-        public async Task SeedBook(string bookName, int projectId)
+        public async Task SeedBook(string bookName, int libraryId)
         {
             var bookForm = new BookForm
             {
                 Name = bookName,
-                LibraryId = projectId
+                LibraryId = libraryId
             };
-            var response1 = await Client.PostAsync($"/api/libraries/{projectId}/books",
+            var response1 = await Client.PostAsync($"/api/libraries/{libraryId}/books",
                 new StringContent(JsonConvert.SerializeObject(bookForm), Encoding.UTF8, "application/json"));
         }
 
-        private LibraryForm GenerateLibraryCreateForm(string projectName)
+        private LibraryForm GenerateLibraryCreateForm(string libraryName)
         {
             return new LibraryForm
             {
-                Name = projectName,
+                Name = libraryName,
             };
         }
 
@@ -76,12 +76,12 @@ namespace TestProject.Tests
             var libraries = JsonConvert.DeserializeObject<IEnumerable<Library>>(response0.Content.ReadAsStringAsync().Result).ToList();
             libraries.Count.Should().Be(4);
 
-            var project = libraries.FirstOrDefault(x => x.Name == "Library Name 1");
-            project.Should().NotBeNull();
+            var library = libraries.FirstOrDefault(x => x.Name == "Library Name 1");
+            library.Should().NotBeNull();
 
-            await SeedBook("test book 1", project.Id);
-            await SeedBook("test book 2", project.Id);
-            var response1 = await Client.GetAsync($"/api/libraries/{project.Id}/books");
+            await SeedBook("test book 1", library.Id);
+            await SeedBook("test book 2", library.Id);
+            var response1 = await Client.GetAsync($"/api/libraries/{library.Id}/books");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
             var books = JsonConvert.DeserializeObject<IEnumerable<Book>>(response1.Content.ReadAsStringAsync().Result).ToList();
             books.Count.Should().Be(2);
@@ -98,22 +98,22 @@ namespace TestProject.Tests
             var response0 = await Client.GetAsync("/api/libraries/1");
             response0.StatusCode.Should().BeEquivalentTo(200);
 
-            var project = JsonConvert.DeserializeObject<Library>(response0.Content.ReadAsStringAsync().Result);
-            project.Name.Should().Be("Library Name 1");
+            var library = JsonConvert.DeserializeObject<Library>(response0.Content.ReadAsStringAsync().Result);
+            library.Name.Should().Be("Library Name 1");
 
             var response1 = await Client.GetAsync("/api/libraries/101");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
 
-            await SeedBook("test book", project.Id);
+            await SeedBook("test book", library.Id);
             var response2 = await Client.GetAsync($"/api/libraries/21312/books/1");
             response2.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
 
-            await SeedBook("test book", project.Id);
-            var response3 = await Client.GetAsync($"/api/libraries/{project.Id}/books/1");
+            await SeedBook("test book", library.Id);
+            var response3 = await Client.GetAsync($"/api/libraries/{library.Id}/books/1");
             response3.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
             var book = JsonConvert.DeserializeObject<Book>(response3.Content.ReadAsStringAsync().Result);
             book.Name.Should().Be("test book");
-            book.LibraryId.Should().Be(project.Id);
+            book.LibraryId.Should().Be(library.Id);
         }
 
         // TEST NAME - getSingleEntryByFilter
@@ -165,7 +165,7 @@ namespace TestProject.Tests
         {
             await SeedData();
 
-            var updatedLibraryName = "Updated projectName";
+            var updatedLibraryName = "Updated libraryName";
             var newLibraryBody = "Updated library body";
 
             var updateForm = new LibraryForm()
@@ -181,10 +181,10 @@ namespace TestProject.Tests
             var response1 = await Client.GetAsync("/api/libraries/1");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
 
-            var project = JsonConvert.DeserializeObject<Library>(response1.Content.ReadAsStringAsync().Result);
+            var library = JsonConvert.DeserializeObject<Library>(response1.Content.ReadAsStringAsync().Result);
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            project.Name.Should().Be(updatedLibraryName);
-            project.Location.Should().Be(newLibraryBody);
+            library.Name.Should().Be(updatedLibraryName);
+            library.Location.Should().Be(newLibraryBody);
         }
 
         // TEST NAME - updateBookById
