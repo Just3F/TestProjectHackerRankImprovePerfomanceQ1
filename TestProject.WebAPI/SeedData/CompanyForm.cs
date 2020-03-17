@@ -2,7 +2,7 @@
 
 namespace TestProject.WebAPI.SeedData
 {
-    public class LibraryForm
+    public class CompanyForm
     {
         [JsonProperty("id")]
         public int Id { get; set; }

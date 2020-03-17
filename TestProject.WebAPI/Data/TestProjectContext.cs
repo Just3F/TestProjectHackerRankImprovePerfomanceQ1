@@ -10,11 +10,11 @@ namespace TestProject.WebAPI.Data
             : base(options)
         { }
 
-        public DbSet<Library> Libraries { get; set; }
-        public DbSet<Book> Books { get; set; }
+        public DbSet<Company> Companies { get; set; }
+        public DbSet<Product> Products { get; set; }
     }
 
-    public class Book
+    public class Product
     {
         [Key]
         public int Id { get; set; }
@@ -23,11 +23,11 @@ namespace TestProject.WebAPI.Data
 
         public string Category { get; set; }
 
-        public int LibraryId { get; set; }
-        public virtual Library Library { get; set; }
+        public int CompanyId { get; set; }
+        public virtual Company Company { get; set; }
     }
 
-    public class Library
+    public class Company
     {
         [Key]
         public int Id { get; set; }
