@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using TestProject.WebAPI.Data;
 
 namespace TestProject.WebAPI.Services
@@ -10,20 +11,28 @@ namespace TestProject.WebAPI.Services
     public class ReportsService : IReportsService
     {
         private readonly TestProjectContext _testProjectContext;
+        private readonly IStringLocalizer _localizer;
 
-        public ReportsService(TestProjectContext testProjectContext)
+        public static string[] Rows = {"Header1", "Header2", "Header3"};
+
+        public ReportsService(TestProjectContext testProjectContext, IStringLocalizer localizer)
         {
             _testProjectContext = testProjectContext;
+            _localizer = localizer;
         }
 
-        public async Task<IEnumerable<Report>> Get(int documentId, int[] ids)
+        public async Task<IEnumerable<Report>> Get(int[] ids)
         {
-            var users = _testProjectContext.Reports.Where(x => x.DocumentId == documentId).AsQueryable();
+            var reports = _testProjectContext.Reports.AsQueryable();
 
             if (ids != null && ids.Any())
-                users = users.Where(x => ids.Contains(x.Id));
+                reports = reports.Where(x => ids.Contains(x.Id));
+            var result = await reports.ToListAsync();
 
-            return await users.ToListAsync();
+            var translatedRows = Rows.Select(x => _localizer[x].Value).ToList();
+            result.ForEach(x=>x.Rows = translatedRows);
+
+            return result;
         }
 
         public async Task<Report> Add(Report report)
@@ -36,11 +45,11 @@ namespace TestProject.WebAPI.Services
 
         public async Task<Report> Update(Report report)
         {
-            var userForChanges = await _testProjectContext.Reports.SingleAsync(x => x.Id == report.Id);
+            var reportForChange = await _testProjectContext.Reports.SingleAsync(x => x.Id == report.Id);
 
-            userForChanges.Name = report.Name;
+            reportForChange.Name = report.Name;
 
-            _testProjectContext.Reports.Update(userForChanges);
+            _testProjectContext.Reports.Update(reportForChange);
             await _testProjectContext.SaveChangesAsync();
             return report;
         }
@@ -56,7 +65,7 @@ namespace TestProject.WebAPI.Services
 
     public interface IReportsService
     {
-        Task<IEnumerable<Report>> Get(int documentId, int[] ids);
+        Task<IEnumerable<Report>> Get(int[] ids);
 
         Task<Report> Add(Report report);
 

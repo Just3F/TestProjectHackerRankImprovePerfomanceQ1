@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace TestProject.WebAPI.Data
@@ -10,12 +13,16 @@ namespace TestProject.WebAPI.Data
             : base(options)
         { }
 
-        public DbSet<Document> Documents { get; set; }
         public DbSet<Report> Reports { get; set; }
     }
 
     public class Report
     {
+        public Report()
+        {
+            Rows = new List<string>();
+        }
+
         [Key]
         public int Id { get; set; }
 
@@ -23,17 +30,8 @@ namespace TestProject.WebAPI.Data
 
         public string Category { get; set; }
 
-        public int DocumentId { get; set; }
-        public virtual Document Document { get; set; }
-    }
+        [NotMapped]
+        public List<string> Rows { get; set; }
 
-    public class Document
-    {
-        [Key]
-        public int Id { get; set; }
-
-        public string Name { get; set; }
-
-        public string Body { get; set; }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -32,35 +33,24 @@ namespace TestProject.Tests
 
         private async Task SeedData()
         {
-            var createForm0 = GenerateDocumentCreateForm("Document Name 1");
-            var response0 = await Client.PostAsync("/api/documents", new StringContent(JsonConvert.SerializeObject(createForm0), Encoding.UTF8, "application/json"));
+            var createForm0 = GenerateReportCreateForm("Report Name 1");
+            var response0 = await Client.PostAsync("/api/reports", new StringContent(JsonConvert.SerializeObject(createForm0), Encoding.UTF8, "application/json"));
 
-            var createForm1 = GenerateDocumentCreateForm("Document Name 2");
-            var response1 = await Client.PostAsync("/api/documents", new StringContent(JsonConvert.SerializeObject(createForm1), Encoding.UTF8, "application/json"));
+            var createForm1 = GenerateReportCreateForm("Report Name 2");
+            var response1 = await Client.PostAsync("/api/reports", new StringContent(JsonConvert.SerializeObject(createForm1), Encoding.UTF8, "application/json"));
 
-            var createForm2 = GenerateDocumentCreateForm("Document Name 3");
-            var response2 = await Client.PostAsync("/api/documents", new StringContent(JsonConvert.SerializeObject(createForm2), Encoding.UTF8, "application/json"));
+            var createForm2 = GenerateReportCreateForm("Report Name 3");
+            var response2 = await Client.PostAsync("/api/reports", new StringContent(JsonConvert.SerializeObject(createForm2), Encoding.UTF8, "application/json"));
 
-            var createForm3 = GenerateDocumentCreateForm("Document Name 4");
-            var response3 = await Client.PostAsync("/api/documents", new StringContent(JsonConvert.SerializeObject(createForm3), Encoding.UTF8, "application/json"));
+            var createForm3 = GenerateReportCreateForm("Report Name 4");
+            var response3 = await Client.PostAsync("/api/reports", new StringContent(JsonConvert.SerializeObject(createForm3), Encoding.UTF8, "application/json"));
         }
 
-        public async Task SeedReport(string reportName, int projectId)
+        private ReportForm GenerateReportCreateForm(string reportName)
         {
-            var reportForm = new ReportForm
+            return new ReportForm
             {
                 Name = reportName,
-                DocumentId = projectId
-            };
-            var response1 = await Client.PostAsync($"/api/documents/{projectId}/reports",
-                new StringContent(JsonConvert.SerializeObject(reportForm), Encoding.UTF8, "application/json"));
-        }
-
-        private DocumentForm GenerateDocumentCreateForm(string projectName)
-        {
-            return new DocumentForm
-            {
-                Name = projectName,
             };
         }
 
@@ -71,21 +61,10 @@ namespace TestProject.Tests
         {
             await SeedData();
 
-            var response0 = await Client.GetAsync("/api/documents");
+            var response0 = await Client.GetAsync("/api/reports");
             response0.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var documents = JsonConvert.DeserializeObject<IEnumerable<Document>>(response0.Content.ReadAsStringAsync().Result).ToList();
+            var documents = JsonConvert.DeserializeObject<IEnumerable<Report>>(response0.Content.ReadAsStringAsync().Result).ToList();
             documents.Count.Should().Be(4);
-
-            var project = documents.FirstOrDefault(x => x.Name == "Document Name 1");
-            project.Should().NotBeNull();
-
-            await SeedReport("test report 1", project.Id);
-            await SeedReport("test report 2", project.Id);
-            var response1 = await Client.GetAsync($"/api/documents/{project.Id}/reports");
-            response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var reports = JsonConvert.DeserializeObject<IEnumerable<Report>>(response1.Content.ReadAsStringAsync().Result).ToList();
-            reports.Count.Should().Be(2);
-
         }
 
         // TEST NAME - getSingleEntryById
@@ -95,53 +74,30 @@ namespace TestProject.Tests
         {
             await SeedData();
 
-            var response0 = await Client.GetAsync("/api/documents/1");
+            var response0 = await Client.GetAsync("/api/reports/1");
             response0.StatusCode.Should().BeEquivalentTo(200);
 
-            var project = JsonConvert.DeserializeObject<Document>(response0.Content.ReadAsStringAsync().Result);
-            project.Name.Should().Be("Document Name 1");
+            var project = JsonConvert.DeserializeObject<Report>(response0.Content.ReadAsStringAsync().Result);
+            project.Name.Should().Be("Report Name 1");
 
-            var response1 = await Client.GetAsync("/api/documents/101");
+            var response1 = await Client.GetAsync("/api/reports/101");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
-
-            await SeedReport("test report", project.Id);
-            var response2 = await Client.GetAsync($"/api/documents/21312/reports/1");
-            response2.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
-
-            await SeedReport("test report", project.Id);
-            var response3 = await Client.GetAsync($"/api/documents/{project.Id}/reports/1");
-            response3.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var report = JsonConvert.DeserializeObject<Report>(response3.Content.ReadAsStringAsync().Result);
-            report.Name.Should().Be("test report");
-            report.DocumentId.Should().Be(project.Id);
         }
 
-        // TEST NAME - getSingleEntryByFilter
-        // TEST DESCRIPTION - It finds single report for document by ID
+
+        // TEST NAME - getSingleEntryById
+        // TEST DESCRIPTION - It finds single document by ID
         [Fact]
         public async Task Test3()
         {
-            await SeedData();
+            var createForm3 = GenerateReportCreateForm("Report Name 4");
+            var response3 = await Client.PostAsync("/api/reports", new StringContent(JsonConvert.SerializeObject(createForm3), Encoding.UTF8, "application/json"));
 
-            var response1 = await Client.GetAsync("/api/documents");
-            response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var filteredDocuments = JsonConvert.DeserializeObject<IEnumerable<Document>>(response1.Content.ReadAsStringAsync().Result).ToArray();
-            filteredDocuments.Length.Should().Be(4);
+            var response0 = await Client.GetAsync("/api/reports/1");
+            response0.StatusCode.Should().BeEquivalentTo(200);
 
-            await SeedReport("test report 1", 1);
-            await SeedReport("test report 2", 1);
-            var response2 = await Client.GetAsync($"/api/documents/2/reports");
-            response2.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var reports = JsonConvert.DeserializeObject<IEnumerable<Report>>(response2.Content.ReadAsStringAsync().Result).ToList();
-            reports.Count.Should().Be(0);
-            
-            var response3 = await Client.GetAsync($"/api/documents/1/reports");
-            response3.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var reports2 = JsonConvert.DeserializeObject<IEnumerable<Report>>(response3.Content.ReadAsStringAsync().Result).ToList();
-            reports2.Count.Should().Be(2);
-
-            var response4 = await Client.GetAsync($"/api/documents/31232/reports");
-            response4.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
+            var project = JsonConvert.DeserializeObject<Report>(response0.Content.ReadAsStringAsync().Result);
+            project.Name.Should().Be("Report Name 4");
         }
 
         // TEST NAME - deleteDocumentById
@@ -151,10 +107,10 @@ namespace TestProject.Tests
         {
             await SeedData();
 
-            var response0 = await Client.DeleteAsync("/api/documents/1");
+            var response0 = await Client.DeleteAsync("/api/reports/1");
             response0.StatusCode.Should().BeEquivalentTo(StatusCodes.Status204NoContent);
 
-            var response1 = await Client.GetAsync("/api/documents/1");
+            var response1 = await Client.GetAsync("/api/reports/1");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
         }
 
@@ -165,53 +121,63 @@ namespace TestProject.Tests
         {
             await SeedData();
 
-            var updatedDocumentName = "Updated projectName";
-            var newDocumentBody = "Updated document body";
+            var updatedReportName = "Updated reportName";
 
-            var updateForm = new DocumentForm()
+            var updateForm = new ReportForm()
             {
                 Id = 1,
-                Name = updatedDocumentName,
-                Body = newDocumentBody
+                Name = updatedReportName,
             };
 
-            var response0 = await Client.PutAsync("/api/documents/1", new StringContent(JsonConvert.SerializeObject(updateForm), Encoding.UTF8, "application/json"));
+            var response0 = await Client.PutAsync("/api/reports", new StringContent(JsonConvert.SerializeObject(updateForm), Encoding.UTF8, "application/json"));
             response0.StatusCode.Should().BeEquivalentTo(StatusCodes.Status204NoContent);
 
-            var response1 = await Client.GetAsync("/api/documents/1");
+            var response1 = await Client.GetAsync("/api/reports/1");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
 
-            var project = JsonConvert.DeserializeObject<Document>(response1.Content.ReadAsStringAsync().Result);
+            var project = JsonConvert.DeserializeObject<Report>(response1.Content.ReadAsStringAsync().Result);
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            project.Name.Should().Be(updatedDocumentName);
-            project.Body.Should().Be(newDocumentBody);
+            project.Name.Should().Be(updatedReportName);
         }
 
-        // TEST NAME - updateReportById
-        // TEST DESCRIPTION - Check update report web api end point
+        // TEST NAME - checkTranslations
+        // TEST DESCRIPTION - Check update document web api end point
         [Fact]
         public async Task Test6()
         {
             await SeedData();
-            await SeedReport("test report 1", 1);
 
-            var updatedReportname = "Updated reportname";
+            Client.DefaultRequestHeaders.Clear();
+            var response = await Client.GetAsync("/api/reports/1");
+            response.StatusCode.Should().BeEquivalentTo(200);
 
-            var updateForm = new ReportForm
-            {
-                Id = 1,
-                Name = updatedReportname,
-            };
+            var reportDefault = JsonConvert.DeserializeObject<Report>(response.Content.ReadAsStringAsync().Result);
+            reportDefault.Name.Should().Be("Report Name 1");
 
-            var response0 = await Client.PutAsync("/api/documents/1/reports", new StringContent(JsonConvert.SerializeObject(updateForm), Encoding.UTF8, "application/json"));
-            response0.StatusCode.Should().BeEquivalentTo(StatusCodes.Status204NoContent);
+            reportDefault.Rows.Should().HaveCount(3);
+            reportDefault.Rows[0].Should().Be("Header 1");
 
-            var response1 = await Client.GetAsync("/api/documents/1/reports/1");
-            response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
+            Client.DefaultRequestHeaders.Clear();
+            Client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("ru"));
+            var response0 = await Client.GetAsync("/api/reports/1");
+            response0.StatusCode.Should().BeEquivalentTo(200);
 
-            var report = JsonConvert.DeserializeObject<Report>(response1.Content.ReadAsStringAsync().Result);
-            response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            report.Name.Should().Be(updatedReportname);
+            var report = JsonConvert.DeserializeObject<Report>(response0.Content.ReadAsStringAsync().Result);
+            report.Name.Should().Be("Report Name 1");
+
+            report.Rows.Should().HaveCount(3);
+            report.Rows[0].Should().Be("Заголовок 1");
+
+            Client.DefaultRequestHeaders.Clear();
+            Client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("it"));
+            var response1 = await Client.GetAsync("/api/reports/1");
+            response1.StatusCode.Should().BeEquivalentTo(200);
+
+            var reportIt = JsonConvert.DeserializeObject<Report>(response1.Content.ReadAsStringAsync().Result);
+            reportIt.Name.Should().Be("Report Name 1");
+
+            reportIt.Rows.Should().HaveCount(3);
+            reportIt.Rows[0].Should().Be("Intestazione 1");
         }
 
         private void SetUpClient()

@@ -7,26 +7,20 @@ using TestProject.WebAPI.Services;
 namespace TestProject.WebAPI.Controllers
 {
     [ApiController]
-    [Route("/api/documents/{documentId}/[controller]")]
+    [Route("/api/[controller]")]
     public class ReportsController : ControllerBase
     {
         private readonly IReportsService _reportsService;
-        private readonly IDocumentsService _documentsService;
 
-        public ReportsController(IReportsService reportsService, IDocumentsService documentsService)
+        public ReportsController(IReportsService reportsService)
         {
             _reportsService = reportsService;
-            _documentsService = documentsService;
         }
 
         [HttpGet("{reportId}")]
-        public async Task<IActionResult> Get(int documentId, int reportId)
+        public async Task<IActionResult> Get(int reportId)
         {
-            var document = (await _documentsService.Get(new[] { documentId })).FirstOrDefault();
-            if (document == null)
-                return NotFound("Document");
-
-            var report = (await _reportsService.Get(documentId, new[] { reportId })).FirstOrDefault();
+            var report = (await _reportsService.Get(new[] { reportId })).FirstOrDefault();
             if (report == null)
                 return NotFound("Report");
 
@@ -34,42 +28,30 @@ namespace TestProject.WebAPI.Controllers
         }
 
         [HttpGet("")]
-        public async Task<IActionResult> GetAll(int documentId)
+        public async Task<IActionResult> GetAll()
         {
-            var document = (await _documentsService.Get(new[] { documentId })).FirstOrDefault();
-            if (document == null)
-                return NotFound("Document");
-
-            var newsItems = await _reportsService.Get(documentId, null);
+            var newsItems = await _reportsService.Get(null);
             return Ok(newsItems);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(int documentId, Report report)
+        public async Task<IActionResult> Add(Report report)
         {
-            var document = (await _documentsService.Get(new[] { documentId })).FirstOrDefault();
-            if (document == null)
-                return NotFound("Document");
-
             await _reportsService.Add(report);
             return Ok(report);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update(int documentId, Report report)
+        public async Task<IActionResult> Update(Report report)
         {
-            var document = (await _documentsService.Get(new[] { documentId })).FirstOrDefault();
-            if (document == null)
-                return NotFound("Document");
-
             await _reportsService.Update(report);
             return NoContent();
         }
 
         [HttpDelete("{reportId}")]
-        public async Task<IActionResult> Delete(int documentId, int reportId)
+        public async Task<IActionResult> Delete(int reportId)
         {
-            var report = (await _reportsService.Get(documentId, new[] { reportId })).FirstOrDefault();
+            var report = (await _reportsService.Get(new[] { reportId })).FirstOrDefault();
             if (report == null)
                 return NotFound();
 
