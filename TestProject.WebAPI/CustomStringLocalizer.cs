@@ -9,32 +9,32 @@ namespace TestProject.WebAPI
     {
         Dictionary<string, Dictionary<string, string>> resources;
 
-        const string HEADER1 = "Header1";
-        const string HEADER2 = "Header2";
-        const string HEADER3 = "Header3";
+        const string Key1 = "DramaKey";
+        const string Key2 = "HorrorKey";
+        const string Key3 = "ComedyKey";
 
         public CustomStringLocalizer()
         {
 
             Dictionary<string, string> enDict = new Dictionary<string, string>
             {
-                {HEADER1, "Header 1" },
-                {HEADER2, "Header 2" },
-                {HEADER3, "Header 3" }
+                {Key1, "Drama" },
+                {Key2, "Horror" },
+                {Key3, "Comedy" }
             };
 
             Dictionary<string, string> ruDict = new Dictionary<string, string>
             {
-                {HEADER1, "Заголовок 1" },
-                {HEADER2, "Заголовок 2" },
-                {HEADER3, "Заголовок 3" }
+                {Key1, "Драма" },
+                {Key2, "Ужасы" },
+                {Key3, "Комедия" }
             };
 
             Dictionary<string, string> itDict = new Dictionary<string, string>
             {
-                {HEADER1, "Intestazione 1" },
-                {HEADER2, "Intestazione 2" },
-                {HEADER3, "Intestazione 3" }
+                {Key1, "Dramma" },
+                {Key2, "Orrore" },
+                {Key3, "Сommedia" }
             };
 
             resources = new Dictionary<string, Dictionary<string, string>>

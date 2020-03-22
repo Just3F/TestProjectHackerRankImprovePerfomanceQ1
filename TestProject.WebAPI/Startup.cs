@@ -29,7 +29,7 @@ namespace TestProject.WebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IStringLocalizer, CustomStringLocalizer>();
-            services.AddScoped<IReportsService, ReportsService>();
+            services.AddScoped<IMoviesService, MoviesService>();
             services.AddDbContext<TestProjectContext>(options => options.UseLazyLoadingProxies().UseSqlite($"Data Source={DatabaseFileName}"));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddControllers();

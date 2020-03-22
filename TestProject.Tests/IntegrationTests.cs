@@ -33,37 +33,39 @@ namespace TestProject.Tests
 
         private async Task SeedData()
         {
-            var createForm0 = GenerateReportCreateForm("Report Name 1");
-            var response0 = await Client.PostAsync("/api/reports", new StringContent(JsonConvert.SerializeObject(createForm0), Encoding.UTF8, "application/json"));
+            var createForm0 = GenerateMovieCreateForm("Movie Title 1", "DramaKey", DateTime.Parse("05.03.2019"));
+            var response0 = await Client.PostAsync("/api/movies", new StringContent(JsonConvert.SerializeObject(createForm0), Encoding.UTF8, "application/json"));
 
-            var createForm1 = GenerateReportCreateForm("Report Name 2");
-            var response1 = await Client.PostAsync("/api/reports", new StringContent(JsonConvert.SerializeObject(createForm1), Encoding.UTF8, "application/json"));
+            var createForm1 = GenerateMovieCreateForm("Movie Title 2", "ComedyKey", DateTime.Parse("15.08.2019"));
+            var response1 = await Client.PostAsync("/api/movies", new StringContent(JsonConvert.SerializeObject(createForm1), Encoding.UTF8, "application/json"));
 
-            var createForm2 = GenerateReportCreateForm("Report Name 3");
-            var response2 = await Client.PostAsync("/api/reports", new StringContent(JsonConvert.SerializeObject(createForm2), Encoding.UTF8, "application/json"));
+            var createForm2 = GenerateMovieCreateForm("Movie Title 3", "HorrorKey", DateTime.Parse("05.10.2019"));
+            var response2 = await Client.PostAsync("/api/movies", new StringContent(JsonConvert.SerializeObject(createForm2), Encoding.UTF8, "application/json"));
 
-            var createForm3 = GenerateReportCreateForm("Report Name 4");
-            var response3 = await Client.PostAsync("/api/reports", new StringContent(JsonConvert.SerializeObject(createForm3), Encoding.UTF8, "application/json"));
+            var createForm3 = GenerateMovieCreateForm("Movie Title 4", "ComedyKey", DateTime.Parse("22.03.2020"));
+            var response3 = await Client.PostAsync("/api/movies", new StringContent(JsonConvert.SerializeObject(createForm3), Encoding.UTF8, "application/json"));
         }
 
-        private ReportForm GenerateReportCreateForm(string reportName)
+        private MovieForm GenerateMovieCreateForm(string movieName, string category, DateTime releaseDate)
         {
-            return new ReportForm
+            return new MovieForm
             {
-                Name = reportName,
+                Title = movieName,
+                Category = category,
+                ReleaseDate = releaseDate
             };
         }
 
         // TEST NAME - getAllEntriesById
-        // TEST DESCRIPTION - It finds all documents in Database and report for the created document
+        // TEST DESCRIPTION - It finds all documents in Database and movie for the created document
         [Fact]
         public async Task Test1()
         {
             await SeedData();
 
-            var response0 = await Client.GetAsync("/api/reports");
+            var response0 = await Client.GetAsync("/api/movies");
             response0.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            var documents = JsonConvert.DeserializeObject<IEnumerable<Report>>(response0.Content.ReadAsStringAsync().Result).ToList();
+            var documents = JsonConvert.DeserializeObject<IEnumerable<Movie>>(response0.Content.ReadAsStringAsync().Result).ToList();
             documents.Count.Should().Be(4);
         }
 
@@ -74,13 +76,13 @@ namespace TestProject.Tests
         {
             await SeedData();
 
-            var response0 = await Client.GetAsync("/api/reports/1");
+            var response0 = await Client.GetAsync("/api/movies/1");
             response0.StatusCode.Should().BeEquivalentTo(200);
 
-            var project = JsonConvert.DeserializeObject<Report>(response0.Content.ReadAsStringAsync().Result);
-            project.Name.Should().Be("Report Name 1");
+            var project = JsonConvert.DeserializeObject<Movie>(response0.Content.ReadAsStringAsync().Result);
+            project.Title.Should().Be("Movie Title 1");
 
-            var response1 = await Client.GetAsync("/api/reports/101");
+            var response1 = await Client.GetAsync("/api/movies/101");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
         }
 
@@ -90,14 +92,14 @@ namespace TestProject.Tests
         [Fact]
         public async Task Test3()
         {
-            var createForm3 = GenerateReportCreateForm("Report Name 4");
-            var response3 = await Client.PostAsync("/api/reports", new StringContent(JsonConvert.SerializeObject(createForm3), Encoding.UTF8, "application/json"));
+            var createForm3 = GenerateMovieCreateForm("Movie Title 4", "DramaKey", DateTime.Parse("05.03.2019"));
+            var response3 = await Client.PostAsync("/api/movies", new StringContent(JsonConvert.SerializeObject(createForm3), Encoding.UTF8, "application/json"));
 
-            var response0 = await Client.GetAsync("/api/reports/1");
+            var response0 = await Client.GetAsync("/api/movies/1");
             response0.StatusCode.Should().BeEquivalentTo(200);
 
-            var project = JsonConvert.DeserializeObject<Report>(response0.Content.ReadAsStringAsync().Result);
-            project.Name.Should().Be("Report Name 4");
+            var project = JsonConvert.DeserializeObject<Movie>(response0.Content.ReadAsStringAsync().Result);
+            project.Title.Should().Be("Movie Title 4");
         }
 
         // TEST NAME - deleteDocumentById
@@ -107,10 +109,10 @@ namespace TestProject.Tests
         {
             await SeedData();
 
-            var response0 = await Client.DeleteAsync("/api/reports/1");
+            var response0 = await Client.DeleteAsync("/api/movies/1");
             response0.StatusCode.Should().BeEquivalentTo(StatusCodes.Status204NoContent);
 
-            var response1 = await Client.GetAsync("/api/reports/1");
+            var response1 = await Client.GetAsync("/api/movies/1");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status404NotFound);
         }
 
@@ -121,23 +123,23 @@ namespace TestProject.Tests
         {
             await SeedData();
 
-            var updatedReportName = "Updated reportName";
+            var updatedMovieName = "Updated movieName";
 
-            var updateForm = new ReportForm()
+            var updateForm = new MovieForm()
             {
                 Id = 1,
-                Name = updatedReportName,
+                Title = updatedMovieName,
             };
 
-            var response0 = await Client.PutAsync("/api/reports", new StringContent(JsonConvert.SerializeObject(updateForm), Encoding.UTF8, "application/json"));
+            var response0 = await Client.PutAsync("/api/movies", new StringContent(JsonConvert.SerializeObject(updateForm), Encoding.UTF8, "application/json"));
             response0.StatusCode.Should().BeEquivalentTo(StatusCodes.Status204NoContent);
 
-            var response1 = await Client.GetAsync("/api/reports/1");
+            var response1 = await Client.GetAsync("/api/movies/1");
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
 
-            var project = JsonConvert.DeserializeObject<Report>(response1.Content.ReadAsStringAsync().Result);
+            var project = JsonConvert.DeserializeObject<Movie>(response1.Content.ReadAsStringAsync().Result);
             response1.StatusCode.Should().BeEquivalentTo(StatusCodes.Status200OK);
-            project.Name.Should().Be(updatedReportName);
+            project.Title.Should().Be(updatedMovieName);
         }
 
         // TEST NAME - checkTranslations
@@ -148,36 +150,33 @@ namespace TestProject.Tests
             await SeedData();
 
             Client.DefaultRequestHeaders.Clear();
-            var response = await Client.GetAsync("/api/reports/1");
+            var response = await Client.GetAsync("/api/movies/1");
             response.StatusCode.Should().BeEquivalentTo(200);
 
-            var reportDefault = JsonConvert.DeserializeObject<Report>(response.Content.ReadAsStringAsync().Result);
-            reportDefault.Name.Should().Be("Report Name 1");
+            var movieDefault = JsonConvert.DeserializeObject<Movie>(response.Content.ReadAsStringAsync().Result);
+            movieDefault.Title.Should().Be("Movie Title 1");
 
-            reportDefault.Rows.Should().HaveCount(3);
-            reportDefault.Rows[0].Should().Be("Header 1");
+            movieDefault.Category.Should().Be("Drama");
 
             Client.DefaultRequestHeaders.Clear();
             Client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("ru"));
-            var response0 = await Client.GetAsync("/api/reports/1");
+            var response0 = await Client.GetAsync("/api/movies/1");
             response0.StatusCode.Should().BeEquivalentTo(200);
 
-            var report = JsonConvert.DeserializeObject<Report>(response0.Content.ReadAsStringAsync().Result);
-            report.Name.Should().Be("Report Name 1");
+            var movie = JsonConvert.DeserializeObject<Movie>(response0.Content.ReadAsStringAsync().Result);
+            movie.Title.Should().Be("Movie Title 1");
 
-            report.Rows.Should().HaveCount(3);
-            report.Rows[0].Should().Be("Заголовок 1");
+            movie.Category.Should().Be("Драма");
 
             Client.DefaultRequestHeaders.Clear();
             Client.DefaultRequestHeaders.AcceptLanguage.Add(new StringWithQualityHeaderValue("it"));
-            var response1 = await Client.GetAsync("/api/reports/1");
+            var response1 = await Client.GetAsync("/api/movies/1");
             response1.StatusCode.Should().BeEquivalentTo(200);
 
-            var reportIt = JsonConvert.DeserializeObject<Report>(response1.Content.ReadAsStringAsync().Result);
-            reportIt.Name.Should().Be("Report Name 1");
+            var movieIt = JsonConvert.DeserializeObject<Movie>(response1.Content.ReadAsStringAsync().Result);
+            movieIt.Title.Should().Be("Movie Title 1");
 
-            reportIt.Rows.Should().HaveCount(3);
-            reportIt.Rows[0].Should().Be("Intestazione 1");
+            movieIt.Category.Should().Be("Dramma");
         }
 
         private void SetUpClient()

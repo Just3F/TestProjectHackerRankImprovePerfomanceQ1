@@ -4,12 +4,12 @@ configuration:
   readonly_paths:
     - TestProject.Tests/IntegrationTests.cs
   scoring:
-    command: rm -rf reports && dotnet build && dotnet test --logger xunit --results-directory ./reports/
-    files: [reports/TestResults.xml]
+    command: rm -rf movies && dotnet build && dotnet test --logger xunit --results-directory ./movies/
+    files: [movies/TestResults.xml]
   ide_config:
     default_open_files:
-      - TestProject.WebAPI/Controllers/ReportsController.cs
+      - TestProject.WebAPI/Controllers/MoviesController.cs
     project_menu:
       run: dotnet build;cd TestProject.WebAPI;dotnet run
       install: dotnet build
-      test: rm -rf reports && dotnet build && dotnet test --logger xunit --results-directory ./reports/
+      test: rm -rf movies && dotnet build && dotnet test --logger xunit --results-directory ./movies/
